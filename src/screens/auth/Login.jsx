@@ -23,22 +23,24 @@ const Login = () => {
     setIsLoading(true)
     try {
       const resp = await userServices.login(values.email, values.password)
-      setIsLoading(false)
       if (resp.status === 200) {
         dispatch(loginSuccess(resp.data))
         await AsyncStorage.setItem('auth', JSON.stringify(resp.data))
-        const profileResp = await userServices.getProfile(resp.data.accessToken)
-        dispatch(addProfile(profileResp))
 
+        const profileResp = await userServices.getProfile(resp.data.accessToken)
+        console.log(profileResp)
+        dispatch(addProfile(profileResp.data))
         Toast.show({
           type: 'success',
           text1: resp.message,
         })
+        setIsLoading(false)
       } else {
         Toast.show({
           type: 'error',
           text1: resp.message,
         })
+        setIsLoading(false)
       }
     } catch (error) {
       setIsLoading(false)

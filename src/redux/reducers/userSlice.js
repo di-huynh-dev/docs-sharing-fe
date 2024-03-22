@@ -6,9 +6,7 @@ const authSlice = createSlice({
     authData: {
       accessToken: null,
       refreshToken: null,
-    },
-    profile: {
-      data: null,
+      profile: null,
     },
   },
   reducers: {
@@ -17,10 +15,12 @@ const authSlice = createSlice({
         (state.authData.refreshToken = action.payload.refreshToken)
     },
     addProfile: (state, action) => {
-      state.authData.profile = action.payload.data
+      state.authData.profile = action.payload
     },
     removeAuth: (state, action) => {
-      state.authData = null
+      state.authData.accessToken = null
+      state.authData.refreshToken = null
+      state.authData.profile = null
     },
   },
 })
