@@ -5,8 +5,8 @@ import ExploreNavigator from './ExploreNavigator'
 import AddPost from '../screens/AddPost'
 import { appColors } from '../constants/appColors'
 import { Ionicons } from '@expo/vector-icons'
-import SavedNavigator from './SavedNavigator'
 import { HomeScreen } from '../screens'
+import DocumentNavigator from './DocumentNavigator'
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator()
@@ -30,7 +30,7 @@ const TabNavigator = () => {
           } else if (route.name === 'AddPost') {
             iconName = 'add-circle-outline'
             size = 35
-          } else if (route.name === 'Saved') {
+          } else if (route.name === 'Document') {
             iconName = 'save-outline'
           } else if (route.name === 'Profile') {
             iconName = 'person-outline'
@@ -51,7 +51,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Explore" component={ExploreNavigator} />
       <Tab.Screen name="AddPost" component={AddPost} />
-      <Tab.Screen name="Saved" component={SavedNavigator} />
+      <Tab.Screen name="Document" component={DocumentNavigator} />
       <Tab.Screen name="Profile" component={ProfileNavigator} />
     </Tab.Navigator>
   )

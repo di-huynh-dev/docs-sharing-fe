@@ -7,7 +7,7 @@ const MainNavigator = () => {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Main" component={DrawerNavigator} />
+      <Stack.Screen name="Home" component={DrawerNavigator} />
     </Stack.Navigator>
   )
 }

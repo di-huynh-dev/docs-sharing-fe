@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const SavedNavigator = () => {
+const Exp1 = () => {
   return (
     <View>
-      <Text>SavedNavigator</Text>
+      <Text>Exp1</Text>
     </View>
   )
 }
 
-export default SavedNavigator
+export default Exp1

@@ -3,12 +3,13 @@ import React from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
-import { useDispatch } from 'react-redux'
-import { removeAuth } from '../redux/reducers/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { authSelector, removeAuth } from '../redux/reducers/userSlice'
 
 const DrawerCustom = () => {
   const navigation = useNavigation()
   const dispatch = useDispatch()
+  const user = useSelector(authSelector)
 
   const handleLogout = () => {
     dispatch(removeAuth())
@@ -18,15 +19,14 @@ const DrawerCustom = () => {
     <View style={[localStyles.container]}>
       <View className="mb-10">
         <Image source={require('../../assets/images/no-avatar.jpg')} style={localStyles.avatar} />
-        <Text className="font-bold text-lg">Huỳnh Tiến Dĩ</Text>
+        <Text className="font-bold text-lg">
+          {user.profile.lastName} {user.profile.firstName}
+        </Text>
       </View>
       <View>
-        <TouchableOpacity
-          className="flex-row items-center mb-4"
-          // onPress={() => navigation.navigate('Profile')}
-        >
-          <AntDesign name="user" size={24} color="black" />
-          <Text className="text-lg ml-2">Trang cá nhân</Text>
+        <TouchableOpacity className="flex-row items-center mb-4" onPress={() => navigation.navigate('Main')}>
+          <AntDesign name="home" size={24} color="black" />
+          <Text className="text-lg ml-2">Trang chủ</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="flex-row items-center mb-4"
@@ -35,12 +35,22 @@ const DrawerCustom = () => {
           <AntDesign name="message1" size={24} color="black" />
           <Text className="text-lg ml-2">Tin nhắn</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity className="flex-row items-center mb-4" onPress={() => navigation.navigate('Document')}>
+          <AntDesign name="save" size={24} color="black" />
+          <Text className="text-lg ml-2">Trang Tài liệu</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="flex-row items-center mb-4" onPress={() => navigation.navigate('Profile')}>
+          <AntDesign name="user" size={24} color="black" />
+          <Text className="text-lg ml-2">Trang cá nhân</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           className="flex-row items-center mb-4"
           // onPress={() => navigation.navigate('Profile')}
         >
           <AntDesign name="setting" size={24} color="black" />
-          <Text className="text-lg ml-2">Tin nhắn</Text>
+          <Text className="text-lg ml-2">Cài đặt</Text>
         </TouchableOpacity>
         <TouchableOpacity className="flex-row items-center mb-4" onPress={() => handleLogout()}>
           <AntDesign name="logout" size={24} color="black" />
