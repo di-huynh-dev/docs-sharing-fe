@@ -6,4 +6,5 @@ import OTP from './auth/OTP'
 import Onboarding from './auth/Onboarding'
 import NewPassword from './auth/NewPassword'
 import ForgetPassword from './auth/ForgetPassword'
-export { HomeScreen, Splash, Login, Signup, OTP, Onboarding, NewPassword, ForgetPassword }
+import DocumentScreen from './document/DocumentScreen'
+export { HomeScreen, Splash, Login, Signup, OTP, Onboarding, NewPassword, ForgetPassword, DocumentScreen }

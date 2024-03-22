@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Button, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
@@ -19,9 +19,7 @@ const DrawerCustom = () => {
     <View style={[localStyles.container]}>
       <View className="mb-10">
         <Image source={require('../../assets/images/no-avatar.jpg')} style={localStyles.avatar} />
-        <Text className="font-bold text-lg">
-          {user.profile.lastName} {user.profile.firstName}
-        </Text>
+        <Text className="text-xl font-bold text-center">{/* {user.profile.lastName} {user.profile.firstName} */}</Text>
       </View>
       <View>
         <TouchableOpacity className="flex-row items-center mb-4" onPress={() => navigation.navigate('Main')}>
