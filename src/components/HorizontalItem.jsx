@@ -17,8 +17,8 @@ const HorizontalItem = ({ docName, totalLikes, totalView, thumbnail }) => {
           </View>
         </View>
       </View>
-      <Text numberOfLines={3} ellipsizeMode="tail" className="text-lg text-white">
-        {docName.length > 12 ? docName.slice(0, 12) + '...' : docName}
+      <Text numberOfLines={3} ellipsizeMode="tail" className="text-md text-white">
+        {docName.length > 22 ? docName.slice(0, 22) + '...' : docName}
       </Text>
     </View>
   )

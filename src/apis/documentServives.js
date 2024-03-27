@@ -9,5 +9,17 @@ const documentServices = {
       },
     })
   },
+  addDocument(accessToken, docName, docIntroduction, viewUrl, downloadUrl, thumbnail, categoryId, fieldId) {
+    const url = '/document/create'
+    return axiosClient.post(
+      url,
+      { docName, docIntroduction, viewUrl, downloadUrl, thumbnail, categoryId, fieldId },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    )
+  },
 }
 export default documentServices
