@@ -28,7 +28,6 @@ const Login = () => {
         await AsyncStorage.setItem('auth', JSON.stringify(resp.data))
 
         const profileResp = await userServices.getProfile(resp.data.accessToken)
-        console.log(profileResp)
         dispatch(addProfile(profileResp.data))
         Toast.show({
           type: 'success',
