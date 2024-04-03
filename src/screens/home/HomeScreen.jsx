@@ -7,8 +7,11 @@ import { Feather } from '@expo/vector-icons'
 import { Octicons } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
 import { TextInput } from 'react-native-gesture-handler'
+import { useSelector } from 'react-redux'
+import { authSelector } from '../../redux/reducers/userSlice'
 const HomeScreen = () => {
   const navigation = useNavigation()
+  const auth = useSelector(authSelector)
   return (
     <View style={[globalStyles.container]}>
       <StatusBar barStyle={'light-content'} />

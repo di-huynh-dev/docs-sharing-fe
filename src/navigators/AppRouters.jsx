@@ -12,7 +12,6 @@ const AppRouters = () => {
 
   const dispatch = useDispatch()
   const auth = useSelector(authSelector)
-  console.log('auth', auth)
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -20,25 +19,6 @@ const AppRouters = () => {
     }, 1500)
 
     return () => clearTimeout(timeout)
-  }, [auth.accessToken])
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        // Kiểm tra xem đã có token chưa
-        if (auth.accessToken) {
-          // Gọi API để lấy thông tin profile
-          const response = await userServices.getProfile(auth.accessToken)
-          console.log('profile', response.data)
-          // Lưu thông tin profile vào store Redux
-          dispatch(addProfile(response.data))
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error)
-        // Xử lý lỗi ở đây nếu cần thiết
-      }
-    }
-    fetchUserProfile()
   }, [auth.accessToken])
 
   // Kiểm tra xem người dùng có vai trò admin hay không

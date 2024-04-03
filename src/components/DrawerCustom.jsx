@@ -17,7 +17,7 @@ const DrawerCustom = () => {
 
   return (
     <View style={[localStyles.container]}>
-      <View className="mb-10">
+      <View className="mb-10 flex-row items-center gap-2 ">
         <Image source={require('../../assets/images/no-avatar.jpg')} style={localStyles.avatar} />
         <Text className="text-xl font-bold text-center">{/* {user.profile.lastName} {user.profile.firstName} */}</Text>
       </View>

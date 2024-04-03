@@ -7,6 +7,7 @@ import Onboarding from './auth/Onboarding'
 import NewPassword from './auth/NewPassword'
 import ForgetPassword from './auth/ForgetPassword'
 import DocumentScreen from './document/DocumentScreen'
+import EditDocumentScreen from './document/EditDocumentScreen'
 import AdminCategory from './category/AdminCategory'
 import AddCategory from './category/AddCategory'
 import UpdateCategory from './category/UpdateCategory'
@@ -27,6 +28,7 @@ export {
   NewPassword,
   ForgetPassword,
   DocumentScreen,
+  EditDocumentScreen,
   AdminCategory,
   AddCategory,
   UpdateCategory,

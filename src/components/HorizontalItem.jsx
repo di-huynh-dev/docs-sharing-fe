@@ -3,7 +3,7 @@ import React from 'react'
 import { AntDesign } from '@expo/vector-icons'
 const HorizontalItem = ({ docName, totalLikes, totalView, thumbnail }) => {
   return (
-    <View className="bg-slate-400 p-4 mx-2 rounded-lg">
+    <View className="bg-slate-400 p-4 mx-2 rounded-lg ">
       <View className="flex-row items-center justify-between gap-2">
         <Image className="w-12 h-16 rounded-lg" source={{ uri: thumbnail }}></Image>
         <View>

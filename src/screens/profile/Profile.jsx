@@ -13,7 +13,6 @@ const Profile = () => {
   const navigation = useNavigation()
   const user = useSelector(authSelector)
   const handleEditProfile = () => {}
-  const birtDay = formatDate(user.profile.dateOfBirth)
   const [isProfileActive, setIsProfileActive] = useState(true)
   const [isPhotoActive, setIsPhotoActive] = useState(false)
   const [isSavedActive, setIsSavedActive] = useState(false)
@@ -104,7 +103,9 @@ const Profile = () => {
               </View>
               <View className="flex-row items-center gap-2 ">
                 <Fontisto name="date" size={24} color="gray" />
-                <Text className="text-center items-center text-gray-400">Ngày sinh: {birtDay}</Text>
+                <Text className="text-center items-center text-gray-400">
+                  Ngày sinh: {formatDate(user.profile.dateOfBirth)}
+                </Text>
               </View>
             </View>
 
