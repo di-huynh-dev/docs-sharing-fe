@@ -11,6 +11,7 @@ import AddPost from '../screens/AddPost'
 import { useNavigation } from '@react-navigation/native'
 import OptionModal from '../components/OptionModal'
 import AddDocumentModal from '../components/AddDocumentModal'
+import { AntDesign } from '@expo/vector-icons'
 
 const Tab = createBottomTabNavigator()
 
@@ -48,25 +49,21 @@ const TabNavigator = () => {
             if (route.name === 'Home') {
               iconName = 'home-outline'
             } else if (route.name === 'Explore') {
-              iconName = 'search-outline'
+              iconName = 'earth-outline'
             } else if (route.name === 'Document') {
               iconName = 'save-outline'
             } else if (route.name === 'AddPost') {
-              iconName = 'add-circle-outline'
+              iconName = 'plus'
               size = 35
               return (
-                <Ionicons
-                  name={iconName}
-                  size={size}
-                  color={color}
-                  style={{ color: focused ? appColors.primary : appColors.gray5 }}
-                  onPress={() => setShowOptions(true)} // Show modal only when AddPost icon is pressed
-                />
+                <View className="rounded-full bg-[#3588f4] w-16 h-16 items-center justify-center">
+                  <AntDesign name={iconName} size={size} color="white" onPress={() => setShowOptions(true)} />
+                </View>
               )
             } else if (route.name === 'Profile') {
               iconName = 'person-outline'
             } else if (route.name === 'AddDocument') {
-              return null // Không hiện icon của AddDocument
+              return null
             }
             color = focused ? appColors.primary : appColors.gray5
             size = route.name === 'AddPost' ? 60 : 30

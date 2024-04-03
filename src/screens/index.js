@@ -7,4 +7,33 @@ import Onboarding from './auth/Onboarding'
 import NewPassword from './auth/NewPassword'
 import ForgetPassword from './auth/ForgetPassword'
 import DocumentScreen from './document/DocumentScreen'
-export { HomeScreen, Splash, Login, Signup, OTP, Onboarding, NewPassword, ForgetPassword, DocumentScreen }
+import AdminCategory from './category/AdminCategory'
+import AddCategory from './category/AddCategory'
+import UpdateCategory from './category/UpdateCategory'
+import AdminField from './field/AdminField'
+import AddField from './field/AddField'
+import UpdateField from './field/UpdateField'
+import AddTag from './tag/AddTag'
+import UpdateTag from './tag/UpdateTag'
+import AdminTag from './tag/AdminTag'
+
+export {
+  HomeScreen,
+  Splash,
+  Login,
+  Signup,
+  OTP,
+  Onboarding,
+  NewPassword,
+  ForgetPassword,
+  DocumentScreen,
+  AdminCategory,
+  AddCategory,
+  UpdateCategory,
+  AdminField,
+  AddField,
+  UpdateField,
+  AddTag,
+  UpdateTag,
+  AdminTag,
+}

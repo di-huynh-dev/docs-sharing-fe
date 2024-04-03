@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native'
 
 const DocumentScreen = () => {
   const auth = useSelector(authSelector)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState([])
   const navigation = useNavigation()
 
