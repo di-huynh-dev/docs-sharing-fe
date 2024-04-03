@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import Swiper from 'react-native-swiper'
-import { appInfo } from '../../constants/appInfos'
 import { useNavigation } from '@react-navigation/native'
 import { globalStyles } from '../../styles/globalStyles'
 import { appColors } from '../../constants/appColors'
-import { fontFamilies } from '../../constants/fontFamilies'
 
 const Onboarding = () => {
   const [index, setIndex] = useState(0)
@@ -21,15 +19,36 @@ const Onboarding = () => {
       >
         <Image
           source={require('../../../assets/images/Onboarding01.png')}
-          style={{ width: appInfo.sizes.WIDTH, height: appInfo.sizes.HEIGHT, resizeMode: 'cover' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            resizeMode: 'cover',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
         />
         <Image
           source={require('../../../assets/images/Onboarding02.png')}
-          style={{ width: appInfo.sizes.WIDTH, height: appInfo.sizes.HEIGHT, resizeMode: 'cover' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            resizeMode: 'cover',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
         />
         <Image
           source={require('../../../assets/images/Onboarding03.png')}
-          style={{ width: appInfo.sizes.WIDTH, height: appInfo.sizes.HEIGHT, resizeMode: 'cover' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            resizeMode: 'cover',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
         />
       </Swiper>
       <View
@@ -48,10 +67,10 @@ const Onboarding = () => {
         ]}
       >
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text className="text-white">Skip</Text>
+          <Text className="text-white">Bỏ qua</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => (index < 2 ? setIndex(index + 1) : navigation.navigate('Login'))}>
-          <Text className="text-white">Next</Text>
+          <Text className="text-white">Tiếp theo</Text>
         </TouchableOpacity>
       </View>
     </View>
