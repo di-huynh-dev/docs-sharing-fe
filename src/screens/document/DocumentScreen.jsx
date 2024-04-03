@@ -1,27 +1,44 @@
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  SafeAreaView,
+  TouchableOpacity,
+  Modal,
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import HorizontalItem from '../../components/HorizontalItem'
 import documentServices from '../../apis/documentServives'
 import { authSelector } from '../../redux/reducers/userSlice'
 import VerticalItem from '../../components/VerticalItem'
 import { useSelector } from 'react-redux'
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 
 const DocumentScreen = () => {
   const auth = useSelector(authSelector)
   const [isLoading, setIsLoading] = useState(false)
-  const [data, setData] = useState([])
+  const [userDocs, setUserDocs] = useState([])
+  const [docs, setDocs] = useState([])
   const navigation = useNavigation()
+  const isFocused = useIsFocused()
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (isFocused) {
+      fetchData()
+    }
+  }, [isFocused])
 
   const fetchData = async () => {
     setIsLoading(true)
-    const resDocuments = await documentServices.getAllDocuments(auth.accessToken, 0, 10)
-    if (resDocuments.status == 200) {
-      setData(resDocuments.data.content)
+    const resUserDocuments = await documentServices.getAllUserDocuments(auth.accessToken, 0, 20)
+    const respDocs = await documentServices.getAllDocuments(auth.accessToken, 0, 20)
+    if (resUserDocuments.status == 200 && respDocs.status == 200) {
+      setUserDocs(resUserDocuments.data.content)
+      setDocs(respDocs.data.content)
+      setIsLoading(false)
+    } else {
       setIsLoading(false)
     }
   }
@@ -40,37 +57,45 @@ const DocumentScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 m-2">
-      <Text className="text-lg font-bold">Nổi bật</Text>
-      <FlatList
-        data={data}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item.docId}
-        contentContainerStyle={{
-          paddingHorizontal: 8,
-        }}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleItemPress(item)}>
-            <View
-              style={{
-                width: 150,
-                height: 200,
-              }}
-            >
-              <HorizontalItem {...item} />
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-
+    <SafeAreaView className="m-2">
       <Text className="text-lg font-bold">Tất cả tài liệu</Text>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={data}
-        renderItem={({ item }) => <VerticalItem {...item} />}
-        keyExtractor={(item) => item.docId}
-      />
+      {docs.length > 0 ? (
+        <FlatList
+          data={docs}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.docId}
+          contentContainerStyle={{
+            paddingHorizontal: 8,
+          }}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleItemPress(item)}>
+              <View
+                style={{
+                  width: 150,
+                  height: 200,
+                }}
+              >
+                <HorizontalItem {...item} />
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      ) : (
+        <Text>Không có tài liệu nào</Text>
+      )}
+
+      <Text className="text-lg font-bold">Tài liệu của tôi</Text>
+      {userDocs.length > 0 ? (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={userDocs}
+          renderItem={({ item }) => <VerticalItem {...item} />}
+          keyExtractor={(item) => item.docId}
+        />
+      ) : (
+        <Text>Không có tài liệu nào</Text>
+      )}
     </SafeAreaView>
   )
 }

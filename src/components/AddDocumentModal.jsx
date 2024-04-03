@@ -35,18 +35,20 @@ const AddDocumentModal = ({ onClose }) => {
   }
 
   const handleAddDocument = async (values) => {
+    const doc = {
+      docName: values.docName,
+      docIntroduction: values.docIntroduction,
+      categoryId: categoryId,
+      fieldId: fieldId,
+    }
+
+    const formData = new FormData()
+    formData.append('docName', doc)
+
     setIsLoading(true)
     try {
-      const resp = await documentServices.addDocument(
-        auth.accessToken,
-        values.docName,
-        values.docIntroduction,
-        values.viewUrl,
-        values.downloadUrl,
-        values.thumbnail,
-        categoryId,
-        fieldId,
-      )
+      const resp = await documentServices.addDocument(auth.accessToken, formData)
+      console.log(resp)
       setIsLoading(false)
       setMessage(resp.message)
     } catch (error) {
@@ -62,9 +64,9 @@ const AddDocumentModal = ({ onClose }) => {
   const addDocumentValidationSchema = yup.object().shape({
     docName: yup.string().required('Document name is required'),
     docIntroduction: yup.string().required('Document introduction is required'),
-    viewUrl: yup.string().required('View URL is required'),
-    downloadUrl: yup.string().required('Download URL is required'),
-    thumbnail: yup.string().required('Thumbnail URL is required'),
+    // viewUrl: yup.string().required('View URL is required'),
+    // downloadUrl: yup.string().required('Download URL is required'),
+    // thumbnail: yup.string().required('Thumbnail URL is required'),
   })
 
   return (
@@ -110,8 +112,8 @@ const AddDocumentModal = ({ onClose }) => {
                 />
                 {errors.docIntroduction && <Text className="text-red-500 text-sm">{errors.docIntroduction}</Text>}
 
-                <Text className="text-[#3588f4] font-bold mb-4 mt-2">Link xem</Text>
-                <TextInput
+                {/* <Text className="text-[#3588f4] font-bold mb-4 mt-2">Link xem</Text> */}
+                {/* <TextInput
                   autoCapitalize="none"
                   value={values.viewUrl}
                   className="flex-grow h-12 bg-[#eff8ff] rounded-xl"
@@ -137,8 +139,9 @@ const AddDocumentModal = ({ onClose }) => {
                   className="flex-grow h-12 bg-[#eff8ff] rounded-xl"
                   placeholder="drive...."
                   onChangeText={handleChange('thumbnail')}
-                />
-                {errors.thumbnail && <Text className="text-red-500 text-sm">{errors.thumbnail}</Text>}
+                /> */}
+                {/* {errors.thumbnail && <Text className="text-red-500 text-sm">{errors.thumbnail}</Text>} */}
+
                 <Text className="text-[#3588f4] font-bold mb-4 mt-2">Danh mục</Text>
 
                 <SelectList
@@ -158,7 +161,7 @@ const AddDocumentModal = ({ onClose }) => {
                 />
                 {fieldId === '' && <Text className="text-red-500 text-sm">FieldId is required</Text>}
 
-                <Text className="text-green-500 text-lg font-bold text-center">{message}</Text>
+                <Text className=" text-lg font-bold text-center">{message}</Text>
 
                 <View className="flex-row justify-end">
                   <TouchableOpacity
