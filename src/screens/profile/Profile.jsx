@@ -1,5 +1,5 @@
 import { View, Text, StatusBar, Image, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
@@ -8,6 +8,7 @@ import { FontAwesome } from '@expo/vector-icons'
 import { useSelector } from 'react-redux'
 import { formatDate } from '../../utils/helpers'
 import { Fontisto } from '@expo/vector-icons'
+import postServices from '../../apis/postServices'
 
 const Profile = () => {
   const navigation = useNavigation()
@@ -15,7 +16,21 @@ const Profile = () => {
   const handleEditProfile = () => {}
   const [isProfileActive, setIsProfileActive] = useState(true)
   const [isPhotoActive, setIsPhotoActive] = useState(false)
-  const [isSavedActive, setIsSavedActive] = useState(false)
+  const [isLikeddActive, setIsLikeddActive] = useState(false)
+  const [likedList, setLikedList] = useState([])
+
+  useEffect(() => {
+    fetchLiked()
+  }, [isLikeddActive])
+  const fetchLiked = async () => {
+    try {
+      const resp = await postServices.getLikedPosts(user.accessToken, 0, 10)
+
+      if (resp.status === 200) {
+        setLikedList(resp.data.content)
+      }
+    } catch (error) {}
+  }
 
   return (
     <ScrollView className="my-2">
@@ -52,27 +67,43 @@ const Profile = () => {
         <View className="mt-2 flex-row mx-2">
           <View className="w-1/3 m-auto mt-2">
             <TouchableOpacity
-              className="rounded-full bg-[#5669ff]  h-12 justify-center"
+              className={`rounded-full bg-${isProfileActive && '[#5669ff]'}  h-12 justify-center`}
               onPress={() => {
                 setIsProfileActive(!isProfileActive)
+                setIsPhotoActive(false)
+                setIsLikeddActive(false)
               }}
             >
               <View className="flex-row  items-center justify-center">
-                <Text className="text-center text-white font-bold items-center">Cá nhân</Text>
+                <Text className={`text-center text-${isProfileActive && 'white'} font-bold items-center`}>Cá nhân</Text>
               </View>
             </TouchableOpacity>
           </View>
           <View className="w-1/3 m-auto mt-2">
-            <TouchableOpacity className="rounded-3xl h-12 justify-center" onPress={handleEditProfile}>
+            <TouchableOpacity
+              className={`rounded-full bg-${isPhotoActive && '[#5669ff]'}  h-12 justify-center`}
+              onPress={() => {
+                setIsPhotoActive(!isPhotoActive)
+                setIsProfileActive(false)
+                setIsLikeddActive(false)
+              }}
+            >
               <View className="flex-row  items-center justify-center">
-                <Text className="text-center text-gray-400 font-bold items-center">Ảnh</Text>
+                <Text className={`text-center text-${isPhotoActive && 'white'} font-bold items-center`}>Ảnh</Text>
               </View>
             </TouchableOpacity>
           </View>
           <View className="w-1/3 m-auto mt-2">
-            <TouchableOpacity className="rounded-3xl h-12 justify-center" onPress={handleEditProfile}>
+            <TouchableOpacity
+              className={`rounded-full bg-${isLikeddActive && '[#5669ff]'}  h-12 justify-center`}
+              onPress={() => {
+                setIsLikeddActive(!isLikeddActive)
+                setIsProfileActive(false)
+                setIsPhotoActive(false)
+              }}
+            >
               <View className="flex-row  items-center justify-center ">
-                <Text className="text-center text-gray-400 font-bold items-center">Lưu trữ</Text>
+                <Text className={`text-center text-${isLikeddActive && 'white'} font-bold items-center`}>Đã thích</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -184,6 +215,37 @@ const Profile = () => {
         )}
 
         {/* Photo view */}
+        {isPhotoActive && (
+          <View>
+            <Text>Photo view</Text>
+          </View>
+        )}
+        {/* Liked view */}
+        {isLikeddActive && (
+          <View className="mx-4">
+            {likedList.map((item) => {
+              return (
+                <View>
+                  <View className="flex-row items-center space-x-3">
+                    <View className="flex-row items-center justify-center">
+                      {item.user.image ? (
+                        <Image source={{ uri: item.user.image }} style={{ width: 70, height: 70, borderRadius: 50 }} />
+                      ) : (
+                        <AntDesign name="user" size={24} color="black" />
+                      )}
+                    </View>
+                    <View className="">
+                      <Text className="text-base font-bold"> </Text>
+                      <Text>
+                        <Text className="text-base font-bold">{item.user.firstName}</Text> đã đăng {item.title}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              )
+            })}
+          </View>
+        )}
       </View>
     </ScrollView>
   )
