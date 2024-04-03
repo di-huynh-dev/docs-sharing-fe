@@ -29,6 +29,7 @@ const AppRouters = () => {
         if (auth.accessToken) {
           // Gọi API để lấy thông tin profile
           const response = await userServices.getProfile(auth.accessToken)
+          console.log('profile', response.data)
           // Lưu thông tin profile vào store Redux
           dispatch(addProfile(response.data))
         }
@@ -44,12 +45,12 @@ const AppRouters = () => {
   const isAdmin = auth.profile?.role.roleName === 'ROLE_ADMIN'
 
   // Kiểm tra nếu người dùng là admin thì hiển thị AdminNavigator
-  // if (isAdmin) {
-  //   return <>{isShowSplash ? <Splash /> : auth.accessToken ? <AdminMainNavigator /> : <AuthNavigator />}</>
-  // }
+  if (isAdmin) {
+    return <>{isShowSplash ? <Splash /> : auth.accessToken ? <AdminMainNavigator /> : <AuthNavigator />}</>
+  }
 
   // Nếu không phải admin thì hiển thị MainNavigator
-  return <>{isShowSplash ? <Splash /> : auth.accessToken ? <AdminMainNavigator /> : <AuthNavigator />}</>
+  else return <>{isShowSplash ? <Splash /> : auth.accessToken ? <MainNavigator /> : <AuthNavigator />}</>
 }
 
 export default AppRouters
