@@ -1,7 +1,7 @@
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, ActivityIndicator, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { authSelector } from '../../redux/reducers/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { authSelector, removeAuth } from '../../redux/reducers/userSlice'
 import { SelectList } from 'react-native-dropdown-select-list'
 import { AntDesign } from '@expo/vector-icons'
 import { Feather } from '@expo/vector-icons'
@@ -10,6 +10,8 @@ import { useNavigation } from '@react-navigation/native'
 import { FontAwesome6 } from '@expo/vector-icons'
 import statsServices from '../../apis/statisticServices'
 import { LineChart } from 'react-native-chart-kit'
+import { formatDate } from '../../utils/helpers'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 const AdminHomeScreen = () => {
   const auth = useSelector(authSelector)
@@ -19,7 +21,8 @@ const AdminHomeScreen = () => {
   const [registrationStats, setRegistrationStats] = useState(null)
   const [postStats, setPostStats] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-
+  const [isShowModal, setIsShowModal] = useState(false)
+  const dispatch = useDispatch()
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
@@ -43,7 +46,10 @@ const AdminHomeScreen = () => {
     }
     fetchData()
   }, [auth])
-  const data = [1, 2, 3, 4, 5, 6]
+
+  const logout = () => {
+    dispatch(removeAuth())
+  }
   const chartDataDocument = {
     labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
     datasets: [
@@ -92,10 +98,45 @@ const AdminHomeScreen = () => {
   }
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
+      {isShowModal && (
+        <Modal transparent={true} visible={true} animationType="slide">
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          >
+            <View style={{ backgroundColor: '#fff', padding: 20, borderRadius: 10 }}>
+              <TouchableOpacity onPress={() => setIsShowModal(false)} style={{ alignSelf: 'flex-end' }}>
+                <AntDesign name="close" size={18} color="black" />
+              </TouchableOpacity>
+              <Text className="text-center font-bold text-lg">Thông tin cá nhân</Text>
+              <View>
+                <Text>Mã người dùng:</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{auth.profile.userId}</Text>
+                <Text>Họ và tên:</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                  {auth.profile.lastName} {auth.profile.firstName}
+                </Text>
+                <Text>Email:</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{auth.profile.email}</Text>
+                <Text>Ngày sinh:</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{formatDate(auth.profile.dateOfBirth)}</Text>
+              </View>
+              <TouchableOpacity className="flex-row gap-2 items-center justify-center my-4 " onPress={logout}>
+                <AntDesign name="logout" size={24} color="black" />
+                <Text>Đăng xuất</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
       <ScrollView className="m-2" showsVerticalScrollIndicator={false}>
         <View className="my-2">
           <Text className="text-gray-500 font-bold">Chào mừng đã quay trở lại</Text>
-          <Text className="text-lg font-bold">{auth.profile?.firstName}</Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-xl font-bold">{auth.profile?.firstName}</Text>
+            <TouchableOpacity onPress={() => setIsShowModal(true)}>
+              <Entypo name="dots-three-vertical" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className="flex-row justify-between items-center">
@@ -211,7 +252,7 @@ const AdminHomeScreen = () => {
           </View>
         </View>
       </ScrollView>
-      {isLoading && <ActivityIndicator size="large" color="blue" />}
+      <Spinner visible={isLoading} />
     </SafeAreaView>
   )
 }
