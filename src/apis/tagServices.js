@@ -1,19 +1,19 @@
 import axiosClient from './axiosClient'
 
-const categoryServices = {
-  getAllCategories(accessToken, page, size) {
-    const url = '/category/all?page=' + page + '&size=' + size
+const tagServices = {
+  getAllTags(accessToken, page, size) {
+    const url = '/tag/all?page=' + page + '&size=' + size
     return axiosClient.get(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
   },
-  addCategory(accessToken, categoryName, disabled) {
-    const url = '/category/create'
+  addTag(accessToken, name) {
+    const url = '/tag/create'
     return axiosClient.post(
       url,
-      { categoryName, disabled },
+      { name },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -21,8 +21,8 @@ const categoryServices = {
       },
     )
   },
-  deleteCategory(accessToken, categoryId) {
-    const url = '/category/' + categoryId
+  deleteTag(accessToken, tagId) {
+    const url = '/tag/' + tagId
     return axiosClient.delete(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -30,11 +30,11 @@ const categoryServices = {
     })
   },
 
-  updateCategory(accessToken, categoryId, categoryName, disabled) {
-    const url = '/category/' + categoryId
+  updateTag(accessToken, tagId, name) {
+    const url = '/tag/' + tagId
     return axiosClient.put(
       url,
-      { categoryName, disabled },
+      { name },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -44,4 +44,4 @@ const categoryServices = {
   },
 }
 
-export default categoryServices
+export default tagServices
