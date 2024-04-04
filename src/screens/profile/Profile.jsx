@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, Image, ScrollView } from 'react-native'
+import { View, Text, StatusBar, Image, ScrollView, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
@@ -21,7 +21,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchLiked()
-  }, [isLikeddActive])
+  }, [isProfileActive, isLikeddActive, isPhotoActive])
   const fetchLiked = async () => {
     try {
       const resp = await postServices.getLikedPosts(user.accessToken, 0, 10)
@@ -56,7 +56,7 @@ const Profile = () => {
         <View className="w-2/3 m-auto mt-2">
           <TouchableOpacity
             className="border border-[#5669ff] rounded-3xl h-12 justify-center"
-            onPress={handleEditProfile}
+            onPress={() => navigation.navigate('UpdateProfileScreen')}
           >
             <View className="flex-row items-center justify-center">
               <Text className="text-center text-[#5669ff] font-bold items-center">Chỉnh sửa hồ sơ</Text>
@@ -225,23 +225,25 @@ const Profile = () => {
           <View className="mx-4">
             {likedList.map((item) => {
               return (
-                <View>
-                  <View className="flex-row items-center space-x-3">
-                    <View className="flex-row items-center justify-center">
+                <ScrollView>
+                  <View className="flex-row items-center space-x-3" key={item.postId}>
+                    <View className="flex-row items-center justify-center my-2">
                       {item.user.image ? (
-                        <Image source={{ uri: item.user.image }} style={{ width: 70, height: 70, borderRadius: 50 }} />
+                        <Image source={{ uri: item.user.image }} style={{ width: 50, height: 50, borderRadius: 50 }} />
                       ) : (
                         <AntDesign name="user" size={24} color="black" />
                       )}
                     </View>
-                    <View className="">
+                    <View className="flex-row items-center justify-center">
                       <Text className="text-base font-bold"> </Text>
                       <Text>
-                        <Text className="text-base font-bold">{item.user.firstName}</Text> đã đăng {item.title}
+                        <Text className="text-base font-bold">{item.user.firstName}</Text> đã đăng{' '}
+                        {item.title.substring(0, 25)}
+                        {item.title.length > 25 ? '...' : ''}
                       </Text>
                     </View>
                   </View>
-                </View>
+                </ScrollView>
               )
             })}
           </View>

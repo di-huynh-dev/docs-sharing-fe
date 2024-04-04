@@ -25,12 +25,12 @@ const AppRouters = () => {
   const isAdmin = auth.profile?.role.roleName === 'ROLE_ADMIN'
 
   // Kiểm tra nếu người dùng là admin thì hiển thị AdminNavigator
-  if (isAdmin) {
+  if (isAdmin && auth.accessToken) {
     return <>{isShowSplash ? <Splash /> : auth.accessToken ? <AdminMainNavigator /> : <AuthNavigator />}</>
   }
 
   // Nếu không phải admin thì hiển thị MainNavigator
-  else return <>{isShowSplash ? <Splash /> : auth.accessToken ? <MainNavigator /> : <AuthNavigator />}</>
+  return <>{isShowSplash ? <Splash /> : auth.accessToken && !isAdmin ? <MainNavigator /> : <AuthNavigator />}</>
 }
 
 export default AppRouters

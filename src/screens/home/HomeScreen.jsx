@@ -87,6 +87,7 @@ const HomeScreen = () => {
       <FlatList
         className="flex-1 mb-5"
         data={posts}
+        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => {
           return (
             <View className="bg-white mx-5 rounded-2xl p-3 my-2">

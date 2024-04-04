@@ -25,9 +25,8 @@ const Login = () => {
       const resp = await userServices.login(values.email, values.password)
       if (resp.status === 200) {
         dispatch(loginSuccess(resp.data))
-        await AsyncStorage.setItem('auth', JSON.stringify(resp.data))
-
         dispatch(addProfile(resp.data.user))
+        await AsyncStorage.setItem('auth', JSON.stringify(resp.data))
 
         Toast.show({
           type: 'success',
