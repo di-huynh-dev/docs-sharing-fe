@@ -3,7 +3,6 @@ import { View } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import { appColors } from '../constants/appColors'
-import { HomeScreen } from '../screens'
 import ExploreNavigator from './ExploreNavigator'
 import ProfileNavigator from './ProfileNavigator'
 import DocumentNavigator from './DocumentNavigator'
@@ -12,6 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import OptionModal from '../components/OptionModal'
 import AddDocumentModal from '../components/AddDocumentModal'
 import { AntDesign } from '@expo/vector-icons'
+import PostNavigator from './PostNavigator'
 
 const Tab = createBottomTabNavigator()
 
@@ -27,7 +27,6 @@ const TabNavigator = () => {
   }
 
   const handleAddDocument = () => {
-    // Navigate to AddDocument screen or perform any action related to AddDocument
     setShowOptions(false)
     setShowAddPostModal(true)
   }
@@ -71,7 +70,7 @@ const TabNavigator = () => {
           },
         })}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Home" component={PostNavigator} />
         <Tab.Screen name="Explore" component={ExploreNavigator} />
         <Tab.Screen name="AddPost" component={AddPost} />
         <Tab.Screen name="Document" component={DocumentNavigator} />

@@ -58,7 +58,6 @@ const Signup = () => {
     confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'), // add this line to validate confirmPassword
     firstName: yup.string().required('First Name is Required'),
     lastName: yup.string().required('Last Name is Required'),
-    lastName: yup.string().required('Last Name is Required'),
   })
   return (
     <SafeAreaView className="mx-5 mt-5">

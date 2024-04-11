@@ -17,6 +17,10 @@ import UpdateField from './field/UpdateField'
 import AddTag from './tag/AddTag'
 import UpdateTag from './tag/UpdateTag'
 import AdminTag from './tag/AdminTag'
+import PostList from './post/PostList'
+import PostDetail from './post/PostDetail'
+import PostComment from './post/PostComment'
+import CreatePost from './post/CreatePost'
 
 export {
   HomeScreen,
@@ -38,4 +42,8 @@ export {
   AddTag,
   UpdateTag,
   AdminTag,
+  PostList,
+  PostDetail,
+  PostComment,
+  CreatePost,
 }

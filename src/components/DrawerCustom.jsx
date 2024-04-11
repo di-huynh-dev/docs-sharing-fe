@@ -5,21 +5,29 @@ import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector, removeAuth } from '../redux/reducers/userSlice'
+import Toast from 'react-native-toast-message'
 
 const DrawerCustom = () => {
   const navigation = useNavigation()
   const dispatch = useDispatch()
   const user = useSelector(authSelector)
+  console.log(user)
 
   const handleLogout = () => {
     dispatch(removeAuth())
+    Toast.show({
+      type: 'success',
+      text1: 'Đăng xuất tài khoản thành công!',
+    })
   }
 
   return (
     <View style={[localStyles.container]}>
       <View className="mb-10 flex-row items-center gap-2 ">
         <Image source={require('../../assets/images/no-avatar.jpg')} style={localStyles.avatar} />
-        <Text className="text-xl font-bold text-center">{/* {user.profile.lastName} {user.profile.firstName} */}</Text>
+        <Text className="text-xl font-bold text-center">
+          {user.profile?.lastName} {user.profile?.firstName}
+        </Text>
       </View>
       <View>
         <TouchableOpacity className="flex-row items-center mb-4" onPress={() => navigation.navigate('Main')}>

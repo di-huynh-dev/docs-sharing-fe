@@ -42,6 +42,17 @@ const userServices = {
       },
     })
   },
+
+  updateProfile(accessToken, data) {
+    const url = '/users/profile'
+    return axiosClient.put(url, data, {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+  },
 }
 
 export default userServices

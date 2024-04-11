@@ -23,6 +23,7 @@ const AdminHomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isShowModal, setIsShowModal] = useState(false)
   const dispatch = useDispatch()
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
@@ -51,7 +52,13 @@ const AdminHomeScreen = () => {
     dispatch(removeAuth())
   }
   const chartDataDocument = {
-    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+    labels: Array.from({ length: 6 }, (_, i) => {
+      const currentDate = new Date()
+      currentDate.setMonth(currentDate.getMonth() - i)
+      const month = currentDate.getMonth() + 1 // 0-11
+      const year = currentDate.getFullYear()
+      return `${month.toString().padStart(2, '0')}/${year}`
+    }).reverse(),
     datasets: [
       {
         data: documentStats,
@@ -61,7 +68,13 @@ const AdminHomeScreen = () => {
     ],
   }
   const chartDataRegistration = {
-    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+    labels: Array.from({ length: 6 }, (_, i) => {
+      const currentDate = new Date()
+      currentDate.setMonth(currentDate.getMonth() - i)
+      const month = currentDate.getMonth() + 1 // 0-11
+      const year = currentDate.getFullYear()
+      return `${month.toString().padStart(2, '0')}/${year}`
+    }).reverse(),
     datasets: [
       {
         data: registrationStats,
@@ -72,7 +85,13 @@ const AdminHomeScreen = () => {
   }
 
   const chartDataPost = {
-    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+    labels: Array.from({ length: 6 }, (_, i) => {
+      const currentDate = new Date()
+      currentDate.setMonth(currentDate.getMonth() - i)
+      const month = currentDate.getMonth() + 1 // 0-11
+      const year = currentDate.getFullYear()
+      return `${month.toString().padStart(2, '0')}/${year}`
+    }).reverse(),
     datasets: [
       {
         data: postStats,
@@ -161,22 +180,6 @@ const AdminHomeScreen = () => {
           />
         </View>
 
-        <View className="my-2">
-          <Text>Biểu đồ thống kê</Text>
-          <View>
-            <Text className="font-bold text-center my-2">Biểu đồ thống kê tài liệu được đăng 6 tháng gần đây</Text>
-            {documentStats && (
-              <LineChart data={chartDataDocument} width={350} height={220} chartConfig={chartConfig} bezier />
-            )}
-
-            <Text className="font-bold text-center  my-2">Biểu đồ thống kê người dùng đăng ký 6 tháng gần đây</Text>
-            {registrationStats && (
-              <LineChart data={chartDataRegistration} width={350} height={220} chartConfig={chartConfig} bezier />
-            )}
-            <Text className="font-bold text-center  my-2">Biểu đồ thống kê bài viết được đăng 6 tháng gần đây</Text>
-            {postStats && <LineChart data={chartDataPost} width={350} height={220} chartConfig={chartConfig} bezier />}
-          </View>
-        </View>
         <View>
           <Text>Quản lý hệ thống</Text>
           <View className="flex-row justify-between gap-2 my-2">
@@ -249,6 +252,23 @@ const AdminHomeScreen = () => {
               </View>
               <Text className="text-4xl font-bold my-5">{summary.totalFields}</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+
+        <View className="my-2">
+          <Text>Biểu đồ thống kê</Text>
+          <View className="items-center">
+            <Text className="font-bold text-center my-2">Biểu đồ thống kê tài liệu được đăng 6 tháng gần đây</Text>
+            {documentStats && (
+              <LineChart data={chartDataDocument} width={350} height={220} chartConfig={chartConfig} bezier />
+            )}
+
+            <Text className="font-bold text-center  my-2">Biểu đồ thống kê người dùng đăng ký 6 tháng gần đây</Text>
+            {registrationStats && (
+              <LineChart data={chartDataRegistration} width={350} height={220} chartConfig={chartConfig} bezier />
+            )}
+            <Text className="font-bold text-center  my-2">Biểu đồ thống kê bài viết được đăng 6 tháng gần đây</Text>
+            {postStats && <LineChart data={chartDataPost} width={350} height={220} chartConfig={chartConfig} bezier />}
           </View>
         </View>
       </ScrollView>

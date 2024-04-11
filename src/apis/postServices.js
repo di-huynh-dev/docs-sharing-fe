@@ -10,6 +10,15 @@ const postServices = {
     })
   },
 
+  getPostDetail(accessToken, postId) {
+    const url = '/post/' + postId
+    return axiosClient.get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+  },
+
   likePost(accessToken, postId) {
     const url = '/post/' + postId + '/like'
     return axiosClient.get(url, {

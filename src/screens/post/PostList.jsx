@@ -1,4 +1,4 @@
-import { View, Text, Button, StatusBar, TouchableOpacity, FlatList, Image } from 'react-native'
+import { View, Text, StatusBar, TouchableOpacity, FlatList, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { globalStyles } from '../../styles/globalStyles'
@@ -14,7 +14,7 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import { AntDesign } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 
-const HomeScreen = () => {
+const PostList = () => {
   const navigation = useNavigation()
   const auth = useSelector(authSelector)
   const [posts, setPosts] = useState([])
@@ -25,7 +25,7 @@ const HomeScreen = () => {
 
   const fetchData = async () => {
     try {
-      const resp = await postServices.getAllPost(auth.accessToken, 0, 10)
+      const resp = await postServices.getAllPost(auth.accessToken, 0, 100)
       if (resp.status === 200) {
         setPosts(resp.data.content)
       }
@@ -108,11 +108,14 @@ const HomeScreen = () => {
                 </View>
               </View>
 
-              <View className="mt-5">
+              <TouchableOpacity
+                className="mt-5"
+                onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId, shouldRefresh: true })}
+              >
                 <Text className="text-base font-bold mb-3">{item.title}</Text>
 
                 <Text className="text-sm text-gray-500">{item.content}</Text>
-              </View>
+              </TouchableOpacity>
 
               <View className="flex-row justify-between mt-5 mb-2">
                 <View className="flex-row space-x-4">
@@ -148,4 +151,4 @@ const HomeScreen = () => {
   )
 }
 
-export default HomeScreen
+export default PostList

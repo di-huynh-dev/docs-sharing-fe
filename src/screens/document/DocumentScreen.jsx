@@ -33,7 +33,7 @@ const DocumentScreen = () => {
   const fetchData = async () => {
     setIsLoading(true)
     const resUserDocuments = await documentServices.getAllUserDocuments(auth.accessToken, 0, 20)
-    const respDocs = await documentServices.getAllDocuments(auth.accessToken, 0, 20)
+    const respDocs = await documentServices.getAllDocuments(auth.accessToken, 0, 10)
     if (resUserDocuments.status == 200 && respDocs.status == 200) {
       setUserDocs(resUserDocuments.data.content)
       setDocs(respDocs.data.content)
