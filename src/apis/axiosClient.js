@@ -1,12 +1,20 @@
 import axios from 'axios'
 import queryString from 'query-string'
-import { appInfo } from '../constants/appInfos'
-const BASE_URL = 'http://192.168.175.86:8080/docs-sharing/api/v1'
+const BASE_URL = 'http://192.168.1.3:8080/docs-sharing/api/v1'
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
   paramsSerializer: (params) => queryString.stringify(params),
 })
+
+export const axiosPrivate = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  paramsSerializer: (params) => queryString.stringify(params),
+})
+
 axiosClient.interceptors.request.use(
   function (config) {
     return config
@@ -26,9 +34,3 @@ axiosClient.interceptors.response.use(
 )
 
 export default axiosClient
-
-export const privateAxios = axios.create({
-  baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
-  withCredentials: true,
-})
