@@ -30,7 +30,7 @@ const VerticalItem = ({ docId, docName, totalLikes, totalView, thumbnail, viewUr
     } catch (error) {}
   }
   return (
-    <View className="mx-2 rounded-lg my-2 border-b-[0.2px] max-w-[300px]">
+    <View className="mx-2 rounded-lg my-4 border-b-[0.2px] w-full shadow-xl ">
       {isShowModal && (
         <Modal transparent={true} visible={true} animationType="slide">
           <View
@@ -52,12 +52,10 @@ const VerticalItem = ({ docId, docName, totalLikes, totalView, thumbnail, viewUr
       )}
       <View className="flex-row items-center gap-2">
         <Image className="w-12 h-16 rounded-lg" source={{ uri: thumbnail }}></Image>
-        <View>
-          <View>
-            <Text numberOfLines={2} ellipsizeMode="tail" className="">
-              {docName}
-            </Text>
-          </View>
+        <View className="flex-1">
+          <Text numberOfLines={2} ellipsizeMode="tail">
+            {docName}
+          </Text>
           <View className="flex-row gap-2 items-center">
             <View className="flex-row gap-2 justify-start">
               <AntDesign name="heart" size={16} color="pink" />

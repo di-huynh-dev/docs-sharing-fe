@@ -4,6 +4,10 @@ const BASE_URL = 'http://192.168.1.3:8080/docs-sharing/api/v1'
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
   paramsSerializer: (params) => queryString.stringify(params),
 })
 

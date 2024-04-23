@@ -1,5 +1,5 @@
-import { View, Text, StatusBar, TouchableOpacity, FlatList, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, StatusBar, TouchableOpacity, FlatList, Image, ActivityIndicator, StyleSheet } from 'react-native'
+import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { globalStyles } from '../../styles/globalStyles'
 import { appColors } from '../../constants/appColors'
@@ -7,43 +7,51 @@ import { Feather } from '@expo/vector-icons'
 import { Octicons } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
 import { TextInput } from 'react-native-gesture-handler'
-import { useSelector } from 'react-redux'
-import { authSelector } from '../../redux/reducers/userSlice'
-import postServices from '../../apis/postServices'
 import Entypo from 'react-native-vector-icons/Entypo'
 import { AntDesign } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const PostList = () => {
   const navigation = useNavigation()
-  const auth = useSelector(authSelector)
-  const [posts, setPosts] = useState([])
+  const axiosPrivate = useAxiosPrivate()
+  const client = useQueryClient()
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ['Posts'],
+    queryFn: async () => {
+      try {
+        const resp = await axiosPrivate.get('/post/all?page=0&size=100')
+        return resp
+      } catch (error) {
+        console.log(error)
+        throw new Error('Failed to fetch posts')
+      }
+    },
+  })
 
-  const fetchData = async () => {
+  const handleLikePost = async (postId) => {
     try {
-      const resp = await postServices.getAllPost(auth.accessToken, 0, 100)
+      const resp = await axiosPrivate.post('/post/' + postId + '/like')
+
       if (resp.status === 200) {
-        setPosts(resp.data.content)
+        Toast.show({
+          type: 'success',
+          text1: resp.data.message,
+        })
+        client.invalidateQueries(['Posts'])
       }
     } catch (error) {
       console.log(error)
     }
   }
-  const handleLikePost = async (postId) => {
-    try {
-      const resp = await postServices.likePost(auth.accessToken, postId)
-      if (resp.status === 200) {
-        Toast.show({
-          type: 'success',
-          text1: resp.message,
-        })
-        fetchData()
-      }
-    } catch (error) {}
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    )
   }
   return (
     <View style={[globalStyles.container]}>
@@ -86,17 +94,20 @@ const PostList = () => {
       {/* Body */}
       <FlatList
         className="flex-1 mb-5"
-        data={posts}
+        data={posts.data.data.content}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => {
           return (
-            <View className="bg-white mx-5 rounded-2xl p-3 my-2">
+            <View className="bg-white mx-5 rounded-2xl p-3 my-2" key={item.postId}>
               <View className="flex-row justify-between">
                 <View className="flex-row items-center space-x-3">
                   {item.user.image ? (
-                    <Image source={{ uri: item.user.image }} style={{ width: 70, height: 70, borderRadius: 50 }} />
+                    <Image source={{ uri: item.user.image }} style={{ width: 40, height: 40, borderRadius: 50 }} />
                   ) : (
-                    <AntDesign name="user" size={24} color="black" />
+                    <Image
+                      source={require('../../../assets/images/no-avatar.jpg')}
+                      className="w-14 h-14 rounded-full"
+                    />
                   )}
                   <Text className="text-base font-bold">{item.user.firstName}</Text>
                 </View>
@@ -110,7 +121,7 @@ const PostList = () => {
 
               <TouchableOpacity
                 className="mt-5"
-                onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId, shouldRefresh: true })}
+                onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
               >
                 <Text className="text-base font-bold mb-3">{item.title}</Text>
 
@@ -119,15 +130,13 @@ const PostList = () => {
 
               <View className="flex-row justify-between mt-5 mb-2">
                 <View className="flex-row space-x-4">
-                  <TouchableOpacity onPress={() => handleLike(item.postId)}>
+                  <TouchableOpacity onPress={() => handleLikePost(item.postId)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <TouchableOpacity onPress={() => handleLikePost(item.postId)}>
-                        {item.liked === true ? (
-                          <AntDesign name="heart" size={24} color="#f75050" style={{ marginRight: 5 }} />
-                        ) : (
-                          <AntDesign name="hearto" size={24} color="#f75050" style={{ marginRight: 5 }} />
-                        )}
-                      </TouchableOpacity>
+                      {item.liked === true ? (
+                        <AntDesign name="heart" size={24} color="#f75050" style={{ marginRight: 5 }} />
+                      ) : (
+                        <AntDesign name="hearto" size={24} color="#f75050" style={{ marginRight: 5 }} />
+                      )}
                       <Text>{item.totalLikes}</Text>
                     </View>
                   </TouchableOpacity>
@@ -146,9 +155,26 @@ const PostList = () => {
             </View>
           )
         }}
-      ></FlatList>
+      />
+      <TouchableOpacity style={styles.floatingButton}>
+        <Text className="text-[#5D56F3] m-5">
+          <AntDesign name="upcircleo" size={24} color="black" />
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  floatingButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderRadius: 25,
+    padding: 10,
+    zIndex: 999,
+  },
+})
 
 export default PostList
