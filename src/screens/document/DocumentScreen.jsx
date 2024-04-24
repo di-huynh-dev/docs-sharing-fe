@@ -49,7 +49,6 @@ const DocumentScreen = () => {
   }
 
   const handleItemPress = (item) => {
-    // Navigate to DocumentDetailScreen and pass item data
     navigation.navigate('DocumentDetailScreen', { itemData: item })
   }
 
