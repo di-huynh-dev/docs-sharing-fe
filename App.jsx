@@ -5,7 +5,9 @@ import { StatusBar } from 'react-native'
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native'
 import AppRouters from './src/navigators/AppRouters'
 import 'react-native-gesture-handler'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+const queryClient = new QueryClient()
 export default function App() {
   const MyTheme = {
     ...DefaultTheme,
@@ -22,14 +24,16 @@ export default function App() {
   ;<Toast config={toastConfig} ref={(ref) => Toast.setRef(ref)} />
   return (
     <>
-      <Provider store={store}>
-        <StatusBar style="dark" dark-content />
-        <NavigationContainer theme={MyTheme}>
-          <AppRouters />
-          <StatusBar style="auto" />
-        </NavigationContainer>
-        <Toast config={toastConfig} />
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <StatusBar style="dark" dark-content />
+          <NavigationContainer theme={MyTheme}>
+            <AppRouters />
+            <StatusBar style="auto" />
+          </NavigationContainer>
+          <Toast config={toastConfig} />
+        </Provider>
+      </QueryClientProvider>
     </>
   )
 }

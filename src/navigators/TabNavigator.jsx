@@ -22,13 +22,14 @@ const TabNavigator = () => {
   const [showAddPostModal, setShowAddPostModal] = useState(false)
 
   const handleAddPost = () => {
-    navigation.navigate('AddPost')
+    navigation.navigate('CreatePostScreen')
     setShowOptions(false)
   }
 
   const handleAddDocument = () => {
     setShowOptions(false)
-    setShowAddPostModal(true)
+    // setShowAddPostModal(true)
+    navigation.navigate('CreateDocumentScreen')
   }
 
   return (
@@ -51,7 +52,7 @@ const TabNavigator = () => {
               iconName = 'earth-outline'
             } else if (route.name === 'Document') {
               iconName = 'save-outline'
-            } else if (route.name === 'AddPost') {
+            } else if (route.name === 'CreatePostScreen') {
               iconName = 'plus'
               size = 35
               return (
@@ -72,7 +73,7 @@ const TabNavigator = () => {
       >
         <Tab.Screen name="Home" component={PostNavigator} />
         <Tab.Screen name="Explore" component={ExploreNavigator} />
-        <Tab.Screen name="AddPost" component={AddPost} />
+        <Tab.Screen name="CreatePostScreen" component={AddPost} />
         <Tab.Screen name="Document" component={DocumentNavigator} />
         <Tab.Screen name="Profile" component={ProfileNavigator} />
       </Tab.Navigator>

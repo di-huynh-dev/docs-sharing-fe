@@ -1,6 +1,7 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { CreatePost, PostComment, PostDetail, PostList } from '../screens'
+import { PostComment, PostDetail, PostList } from '../screens'
+import AddDocument from '../screens/AddDocument'
 
 const PostNavigator = () => {
   const Stack = createNativeStackNavigator()
@@ -13,7 +14,7 @@ const PostNavigator = () => {
       <Stack.Screen name="PostListScreen" component={PostList} />
       <Stack.Screen name="PostCommentScreen" component={PostComment} />
       <Stack.Screen name="PostDetailScreen" component={PostDetail} />
-      <Stack.Screen name="CreatePostScreen" component={CreatePost} />
+      <Stack.Screen name="CreateDocumentScreen" component={AddDocument} />
     </Stack.Navigator>
   )
 }

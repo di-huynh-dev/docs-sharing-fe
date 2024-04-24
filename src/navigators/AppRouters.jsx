@@ -21,10 +21,8 @@ const AppRouters = () => {
     return () => clearTimeout(timeout)
   }, [auth.accessToken])
 
-  // Kiểm tra xem người dùng có vai trò admin hay không
   const isAdmin = auth.profile?.role.roleName === 'ROLE_ADMIN'
 
-  // Kiểm tra nếu người dùng là admin thì hiển thị AdminNavigator
   if (isAdmin && auth.accessToken) {
     return <>{isShowSplash ? <Splash /> : auth.accessToken ? <AdminMainNavigator /> : <AuthNavigator />}</>
   }

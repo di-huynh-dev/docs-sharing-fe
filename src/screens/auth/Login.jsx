@@ -33,6 +33,16 @@ const Login = () => {
           text1: resp.message,
         })
         setIsLoading(false)
+      } else if (resp.status === 400) {
+        const respOTP = await userServices.sendOTP(values.email, 'register')
+        await AsyncStorage.setItem('emailRegistered', values.email)
+        Toast.show({
+          type: 'error',
+          text1: resp.message,
+          text2: respOTP.message,
+        })
+        navigation.navigate('OTP')
+        setIsLoading(false)
       } else {
         Toast.show({
           type: 'error',
