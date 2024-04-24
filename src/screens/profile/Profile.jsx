@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native'
+import { View, Text, Image, ScrollView, ActivityIndicator, SafeAreaView, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
@@ -24,6 +24,7 @@ const Profile = () => {
   const [likedList, setLikedList] = useState([])
   const [showAddPostModal, setShowAddPostModal] = useState(false)
   const client = useQueryClient()
+
   useEffect(() => {
     fetchLiked()
   }, [isProfileActive, isLikeddActive, isPhotoActive])
@@ -46,13 +47,28 @@ const Profile = () => {
     },
   })
 
-  if (profileLoading)
+  const { data: posts, isLoading: postLoading } = useQuery({
+    queryKey: ['PostList'],
+    queryFn: async () => {
+      const resp = await axiosPrivate.get('/post/mine?page=0&size=10')
+      return resp.data.data.content
+    },
+  })
+
+  const { data: likedPosts, isLoading: likedPostsLoading } = useQuery({
+    queryKey: ['LikedPostList'],
+    queryFn: async () => {
+      const resp = await axiosPrivate.get('/post/liked?page=0&size=10')
+      return resp.data.data.content
+    },
+  })
+
+  if (profileLoading || postLoading || likedPostsLoading)
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
       </View>
     )
-
   return (
     <SafeAreaView>
       {showAddPostModal && (
@@ -74,9 +90,9 @@ const Profile = () => {
 
         <View className="flex items-center justify-center rounded-full">
           {profile.image ? (
-            <Image source={{ uri: profile.image }} className="my-10 w-40 h-40 rounded-full " />
+            <Image source={{ uri: profile.image }} className="my-2 w-36 h-36 rounded-full " />
           ) : (
-            <Image className="w-40 h-40 rounded-full " source={require('../../../assets/images/no-avatar.jpg')} />
+            <Image className="w-36 h-36 rounded-full " source={require('../../../assets/images/no-avatar.jpg')} />
           )}
           <TouchableOpacity
             className="absolute bottom-10 right-10 rounded-full bg-blue-200 p-2"
@@ -85,6 +101,7 @@ const Profile = () => {
             <Entypo name="camera" size={24} color="white" />
           </TouchableOpacity>
         </View>
+
         <View>
           <Text className="text-xl font-bold text-center">
             {user.profile.lastName} {user.profile.firstName}
@@ -119,6 +136,7 @@ const Profile = () => {
                 </View>
               </TouchableOpacity>
             </View>
+
             <View className="w-1/3 m-auto mt-2">
               <TouchableOpacity
                 className={`rounded-full bg-${isPhotoActive && '[#5669ff]'}  h-12 justify-center`}
@@ -181,57 +199,64 @@ const Profile = () => {
                 </View>
               </View>
 
-              <View className="mx-4 my-2">
-                <Text className="text-sm font-bold">Chủ đề đã chia sẻ</Text>
-                <View className="flex-row">
-                  <View className="m-auto mt-2">
-                    <TouchableOpacity className="rounded-xl p-2 bg-[#5669ff]  h-8 justify-center">
-                      <View className="flex-row  items-center justify-center">
-                        <Text className="text-center text-white font-bold items-center">Lịch sử</Text>
+              <View className="mx-4 my-2 ">
+                <Text className="text-sm font-bold">Bài viết đã chia sẻ</Text>
+                {posts.map((item) => {
+                  return (
+                    <View className="bg-white  rounded-2xl my-2" key={item.postId}>
+                      <View className="flex-row justify-between">
+                        <TouchableOpacity
+                          onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
+                          className=" flex-row items-center"
+                        >
+                          <Text>Bạn đã chia sẻ </Text>
+                          <Text className="text-base font-bold italic">{item.title}</Text>
+                          <Text> vào ngày {formatDate(item.createdAt)}</Text>
+                        </TouchableOpacity>
                       </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View className="m-auto mt-2 ">
-                    <TouchableOpacity className="rounded-xl p-2 bg-red-500 h-8 justify-center">
-                      <View className="flex-row  items-center justify-center">
-                        <Text className="text-center text-white font-bold items-center">Truyện tranh</Text>
+                    </View>
+                  )
+                })}
+                {/* <FlatList
+                  className="flex-1"
+                  data={posts}
+                  showsHorizontalScrollIndicator={false}
+                  renderItem={({ item }) => {
+                    return (
+                      <View className="bg-white  rounded-2xl my-2" key={item.postId}>
+                        <View className="flex-row justify-between">
+                          <TouchableOpacity
+                            onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
+                            className=" flex-row items-center"
+                          >
+                            <Text>Bạn đã chia sẻ </Text>
+                            <Text className="text-base font-bold italic">{item.title}</Text>
+                            <Text> vào ngày {formatDate(item.createdAt)}</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View className="m-auto mt-2 ">
-                    <TouchableOpacity className="rounded-xl p-2 bg-yellow-500 h-8 justify-center">
-                      <View className="flex-row  items-center justify-center">
-                        <Text className="text-center text-white font-bold items-center">Ma mị</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                    )
+                  }}
+                /> */}
               </View>
 
               <View className="mx-4 my-2">
-                <Text className="text-sm font-bold">Chủ đề yêu thích</Text>
-                <View className="flex-row">
-                  <View className="m-auto mt-2">
-                    <TouchableOpacity className="rounded-xl p-2 bg-[#5669ff] h-8 justify-center">
-                      <View className="flex-row  items-center justify-center">
-                        <Text className="text-center text-white font-bold items-center">Lịch sử</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View className="m-auto mt-2 ">
-                    <TouchableOpacity className="rounded-xl p-2 bg-orange-500  h-8 justify-center">
-                      <View className="flex-row  items-center justify-center">
-                        <Text className="text-center text-white font-bold items-center">Truyện tranh</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View className="m-auto mt-2 ">
-                    <TouchableOpacity className="rounded-xl p-2 bg-green-500 h-8 justify-center">
-                      <View className="flex-row  items-center justify-center">
-                        <Text className="text-center text-white font-bold items-center">Ma mị</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
+                <Text className="text-sm font-bold">Tags đã chia sẻ</Text>
+                <View className="flex-wrap flex-row gap-2">
+                  {posts.map((post) => (
+                    <View key={post.postId} className="flex-row flex-wrap">
+                      {post.tags.map((tag) => (
+                        <TouchableOpacity
+                          key={tag.tagId}
+                          className="rounded-xl p-2 m-2 bg-[#5672ff] h-8 justify-center"
+                        >
+                          <View>
+                            <Text className="text-center text-white font-bold items-center">{tag.name}</Text>
+                          </View>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  ))}
                 </View>
               </View>
             </View>
@@ -246,29 +271,22 @@ const Profile = () => {
           {/* Liked view */}
           {isLikeddActive && (
             <View className="mx-4">
-              {likedList.map((item) => {
-                return (
-                  <ScrollView>
-                    <View className="flex-row items-center space-x-3" key={item.postId}>
-                      <View className="flex-row items-center justify-center my-2">
-                        {item.image ? (
-                          <Image source={{ uri: item.image }} style={{ width: 50, height: 50, borderRadius: 50 }} />
-                        ) : (
-                          <AntDesign name="user" size={24} color="black" />
-                        )}
+              <ScrollView>
+                {likedPosts.map((item) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
+                      className="flex-row items-center space-x-3"
+                      key={item.postId}
+                    >
+                      <View className="flex-row my-2 items-center justify-center">
+                        <Text>Bạn đã thích bài viết của {item.user.firstName} về </Text>
+                        <Text className="font-bold">{item.title}</Text>
                       </View>
-                      <View className="flex-row items-center justify-center">
-                        <Text className="text-base font-bold"> </Text>
-                        <Text>
-                          <Text className="text-base font-bold">{item.user.firstName}</Text> đã đăng{' '}
-                          {item.title.substring(0, 25)}
-                          {item.title.length > 25 ? '...' : ''}
-                        </Text>
-                      </View>
-                    </View>
-                  </ScrollView>
-                )
-              })}
+                    </TouchableOpacity>
+                  )
+                })}
+              </ScrollView>
             </View>
           )}
         </View>
