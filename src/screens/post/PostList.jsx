@@ -1,4 +1,14 @@
-import { View, Text, StatusBar, TouchableOpacity, FlatList, Image, ActivityIndicator, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  ActivityIndicator,
+  StyleSheet,
+  RefreshControl,
+} from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { globalStyles } from '../../styles/globalStyles'
@@ -17,6 +27,7 @@ const PostList = () => {
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+  const [refreshing, setRefreshing] = useState(false)
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ['Posts'],
@@ -30,7 +41,11 @@ const PostList = () => {
       }
     },
   })
-
+  const onRefresh = () => {
+    setRefreshing(true)
+    client.invalidateQueries(['Posts'])
+    setRefreshing(false)
+  }
   const handleLikePost = async (postId) => {
     try {
       const resp = await axiosPrivate.post('/post/' + postId + '/like')
@@ -95,6 +110,7 @@ const PostList = () => {
       <FlatList
         className="flex-1 mb-5"
         data={posts.data.data.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => {
           return (
@@ -109,7 +125,9 @@ const PostList = () => {
                       className="w-14 h-14 rounded-full"
                     />
                   )}
-                  <Text className="text-base font-bold">{item.user.firstName}</Text>
+                  <Text className="text-base font-bold">
+                    {item.user.firstName} {item.user.lastName}
+                  </Text>
                 </View>
 
                 <View className="flex items-center justify-center">

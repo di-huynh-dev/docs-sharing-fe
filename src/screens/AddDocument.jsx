@@ -90,13 +90,14 @@ const AddDocument = () => {
       })
 
       if (resp.status === 200) {
+        setIsLoading(false)
+
         Toast.show({
           type: 'success',
           text1: resp.data.message,
         })
         setDocFile(null)
         reset()
-        setIsLoading(false)
       }
     } catch (error) {
       setIsLoading(false)
