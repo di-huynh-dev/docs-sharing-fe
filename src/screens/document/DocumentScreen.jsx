@@ -1,46 +1,44 @@
-import { View, Text, FlatList, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, ActivityIndicator, SafeAreaView, TouchableOpacity, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import HorizontalItem from '../../components/HorizontalItem'
 import { globalStyles } from '../../styles/globalStyles'
-import documentServices from '../../apis/documentServives'
 import { authSelector } from '../../redux/reducers/userSlice'
 import VerticalItem from '../../components/VerticalItem'
 import { useSelector } from 'react-redux'
-import { useIsFocused, useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { appColors } from '../../constants/appColors'
 import { Feather } from '@expo/vector-icons'
 import { Octicons } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
-import { TextInput } from 'react-native-gesture-handler'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { AntDesign } from '@expo/vector-icons'
 
 const DocumentScreen = () => {
   const auth = useSelector(authSelector)
-  const [isLoading, setIsLoading] = useState(false)
-  const [userDocs, setUserDocs] = useState([])
-  const [docs, setDocs] = useState([])
   const navigation = useNavigation()
-  const isFocused = useIsFocused()
+  const client = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+  const [refreshing, setRefreshing] = useState(false)
 
-  useEffect(() => {
-    if (isFocused) {
-      fetchData()
-    }
-  }, [isFocused])
-
-  const fetchData = async () => {
-    setIsLoading(true)
-    const resUserDocuments = await documentServices.getAllUserDocuments(auth.accessToken, 0, 20)
-    const respDocs = await documentServices.getAllDocuments(auth.accessToken, 0, 10)
-    if (resUserDocuments.status == 200 && respDocs.status == 200) {
-      setUserDocs(resUserDocuments.data.content)
-      setDocs(respDocs.data.content)
-      setIsLoading(false)
-    } else {
-      setIsLoading(false)
-    }
+  const { data: documents, isLoading: documentLoading } = useQuery({
+    queryKey: ['Documents'],
+    queryFn: async () => {
+      try {
+        const resp = await axiosPrivate.get('/document/search?page=0&size=100&order=oldest')
+        return resp.data.data.content
+      } catch (error) {
+        console.log(error)
+        throw new Error('Failed to fetch posts')
+      }
+    },
+  })
+  const onRefresh = () => {
+    setRefreshing(true)
+    client.invalidateQueries(['Documents'])
+    setRefreshing(false)
   }
-
-  if (isLoading) {
+  if (documentLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -77,7 +75,9 @@ const DocumentScreen = () => {
         <View className="flex-row justify-between p-5 items-center">
           <View className="flex-row items-center space-x-2">
             <Feather name="search" size={30} color="white" />
-            <TextInput placeholder="| Tìm kiếm.." className="text-lg text-white" />
+            <TouchableOpacity onPress={() => navigation.navigate('DocumentSearchScreen')}>
+              <Text>|Tìm kiếm....</Text>
+            </TouchableOpacity>
           </View>
 
           <View>
@@ -92,9 +92,9 @@ const DocumentScreen = () => {
       {/* Body */}
       <View className="mx-5">
         <Text className="text-lg font-bold">Nổi bật</Text>
-        {docs.length > 0 ? (
+        {documents.length > 0 ? (
           <FlatList
-            data={docs}
+            data={documents}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.docId}
@@ -118,17 +118,16 @@ const DocumentScreen = () => {
           <Text>Không có tài liệu nào</Text>
         )}
 
-        <Text className="text-lg font-bold">Tất cả tài liệu</Text>
-        {docs.length > 0 ? (
+        <View className="flex-row justify-between items-center mt-5">
+          <Text className="text-lg font-bold">Tất cả tài liệu</Text>
+        </View>
+        {documents.length > 0 ? (
           <FlatList
             className="mr-2"
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             showsVerticalScrollIndicator={false}
-            data={docs}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleItemPress(item)}>
-                <VerticalItem {...item} />
-              </TouchableOpacity>
-            )}
+            data={documents}
+            renderItem={({ item }) => <VerticalItem {...item} />}
             keyExtractor={(item) => item.docId}
           />
         ) : (
