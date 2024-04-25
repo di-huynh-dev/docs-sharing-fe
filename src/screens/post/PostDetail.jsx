@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { EvilIcons } from '@expo/vector-icons'
+import CommentRender from '../../components/CommentRender'
 
 const PostDetail = ({ route }) => {
   const { postId, shouldRefresh } = route.params
@@ -55,7 +56,8 @@ const PostDetail = ({ route }) => {
     setIsModalVisible(!isModalVisible)
   }
 
-  const toggleModalReply = () => {
+  const toggleModalReply = (commentId) => {
+    setSelectedCommentId(commentId)
     setIsModalReplyVisible(!isModalReplyVisible)
   }
 
@@ -86,6 +88,7 @@ const PostDetail = ({ route }) => {
   const handleReplyComment = async () => {
     try {
       const resp = await commentServices.replyComment(auth.accessToken, postId, selectedCommentId, content)
+      console.log(resp)
       if (resp.status === 200) {
         Toast.show({
           type: 'success',
@@ -166,6 +169,14 @@ const PostDetail = ({ route }) => {
 
   return (
     <View className=" flex-1 bg-white mx-5 my-2 rounded-2xl">
+      <View className="m-2 flex-row gap-4 items-center p-2">
+        <TouchableOpacity className="mx-4" onPress={() => navigation.navigate('PostListScreen')}>
+          <AntDesign name="arrowleft" size={24} color="black" />
+        </TouchableOpacity>
+        <Text className="text-lg font-bold">
+          Bài viết của {postDetail?.user.lastName} {postDetail?.user.firstName}
+        </Text>
+      </View>
       {/* Post detail */}
       <View className="flex-row items-center space-x-3">
         {postDetail && postDetail?.user.image ? (
@@ -180,7 +191,6 @@ const PostDetail = ({ route }) => {
           <Text className="text-sm text-gray-500">{formatDate(postDetail?.createdAt)}</Text>
         </View>
       </View>
-
       <View className="my-3 border rounded-xl p-2 border-gray-200">
         <View>
           <Text className="text-base font-bold mb-3">{postDetail?.title}</Text>
@@ -203,7 +213,6 @@ const PostDetail = ({ route }) => {
           </View>
         </View>
       </View>
-
       {/* Action */}
       <View className="flex-row items-center space-x-2 my-2">
         <TouchableOpacity onPress={() => handleLikePost()} className="flex-row items-center">
@@ -224,7 +233,6 @@ const PostDetail = ({ route }) => {
           <Text>Bình luận</Text>
         </View>
       </View>
-
       {/* Update comment */}
       <Modal
         transparent={true}
@@ -262,7 +270,6 @@ const PostDetail = ({ route }) => {
           </View>
         </View>
       </Modal>
-
       {/* rep comment */}
       <Modal
         transparent={true}
@@ -298,7 +305,6 @@ const PostDetail = ({ route }) => {
         </View>
       </Modal>
       <View className="border-b border-gray-300 my-2"></View>
-
       <View className="flex-row justify-between items-center gap-2">
         {auth.profile.image ? (
           <Image source={{ uri: auth.profile.image }} style={{ width: 40, height: 40, borderRadius: 50 }} />
@@ -316,9 +322,8 @@ const PostDetail = ({ route }) => {
           <Feather name="send" size={24} color="blue" />
         </TouchableOpacity>
       </View>
-
       {/* List comment */}
-      <ScrollView>
+      {/* <ScrollView>
         {comments === null ? (
           <Text>Không có bình luận nào</Text>
         ) : (
@@ -338,15 +343,10 @@ const PostDetail = ({ route }) => {
                   </View>
                   <View className="flex">
                     <View className="flex-row gap-2 items-center justify-between">
-                      {comment.user.userId === auth.profile.userId ? (
-                        <Text className="text-base font-bold">
-                          {comment.user.firstName} {comment.user.lastName} (Bạn)
-                        </Text>
-                      ) : (
-                        <Text className="text-base font-bold">
-                          {comment.user.firstName} {comment.user.lastName}
-                        </Text>
-                      )}
+                      <Text className="text-base font-bold">
+                        {comment.user.firstName} {comment.user.lastName}
+                        {comment.user.userId === auth.profile.userId ? ' (Bạn)' : ''}
+                      </Text>
                     </View>
                     <Text className="text-sm my-1">{comment.content}</Text>
                     <View className="flex-row gap-2 items-center">
@@ -425,23 +425,142 @@ const PostDetail = ({ route }) => {
                       )}
                     </View>
 
-                    {comment.parentComment && (
+                    {comment.childComments.length > 0 && (
                       <>
-                        <TouchableOpacity onPress={() => handleViewAllReplies(comment.parentComment.commentId)}>
-                          <Text style={{ color: 'blue' }}>Xem tất cả phản hồi</Text>
-                        </TouchableOpacity>
+                        {comment.childComments.map((childComment) => (
+                          <View key={childComment.commentId} style={{ marginLeft: 10 }}>
+                            <View key={childComment.commentId} className="mt-2">
+                              <View className="flex-row gap-2">
+                                <View className="flex-row ">
+                                  {childComment.user.image ? (
+                                    <Image
+                                      source={{ uri: childComment.user.image }}
+                                      className="w-10 h-10 rounded-full"
+                                    />
+                                  ) : (
+                                    <Image
+                                      source={require('../../../assets/images/no-avatar.jpg')}
+                                      className="w-10 h-10 rounded-full"
+                                    />
+                                  )}
+                                </View>
+                                <View className="flex">
+                                  <View className="flex-row gap-2 items-center justify-between">
+                                    <Text className="text-base font-bold">
+                                      {childComment.user.firstName} {childComment.user.lastName}
+                                      {childComment.user.userId === auth.profile.userId ? ' (Bạn)' : ''}
+                                    </Text>
+                                  </View>
+                                  <Text className="text-sm my-1">{childComment.content}</Text>
+                                  <View className="flex-row gap-2 items-center">
+                                    <Text className="text-gray-500 text-xs">{formatDate(childComment.createdAt)}</Text>
+                                    <TouchableOpacity onPress={() => handleLikeComment(childComment.commentId)}>
+                                      {childComment.liked === false ? (
+                                        <Text className="text-blue-500">
+                                          <AntDesign name="like2" size={18} color="blue" />
+                                        </Text>
+                                      ) : (
+                                        <Text className="text-blue-500">
+                                          <AntDesign name="dislike2" size={18} color="red" />
+                                        </Text>
+                                      )}
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        setSelectedCommentId(childComment.commentId)
+                                        toggleModalReply()
+                                      }}
+                                    >
+                                      <Text className="text-blue-500">
+                                        <Entypo name="reply" size={18} color="blue" />
+                                      </Text>
+                                    </TouchableOpacity>
 
-                        {comment.parentComment?.commentId === selectedCommentId && (
-                          <View style={{ marginLeft: 10 }}>
-                            <View>
-                              <Text className="max-w-[270px]">{comment.parentComment.content}</Text>
+                                    {childComment.user.userId === auth.profile.userId && (
+                                      <>
+                                        <TouchableOpacity
+                                          onPress={() => {
+                                            setSelectedCommentId(childComment.commentId)
+                                            setModalActionsVisible(true)
+                                          }}
+                                        >
+                                          <Feather name="more-vertical" size={18} color="black" />
+                                        </TouchableOpacity>
+                                        <Modal
+                                          animationType="fade"
+                                          transparent={true}
+                                          visible={modalActionsVisible && selectedCommentId === childComment.commentId}
+                                          onRequestClose={() => {
+                                            setModalActionsVisible(false)
+                                          }}
+                                        >
+                                          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View className="bg-[#f7f7f7] rounded-lg w-30%">
+                                              <TouchableOpacity
+                                                onPress={() => {
+                                                  setModalUpdateVisible(true)
+                                                  setSelectedCommentId(childComment.commentId)
+                                                  setModalActionsVisible(false)
+                                                }}
+                                                className="p-3 border-b border-gray-200 flex-row gap-2 items-center"
+                                              >
+                                                <AntDesign name="edit" size={12} color="black" />
+                                                <Text>Chỉnh sửa</Text>
+                                              </TouchableOpacity>
+                                              <TouchableOpacity
+                                                onPress={() => {
+                                                  handleDeleteComment(childComment.commentId)
+                                                  setModalActionsVisible(false)
+                                                }}
+                                                className="p-3 border-b border-gray-200 flex-row gap-2 items-center"
+                                              >
+                                                <AntDesign name="delete" size={12} color="black" />
+                                                <Text>Xóa </Text>
+                                              </TouchableOpacity>
+
+                                              <TouchableOpacity
+                                                onPress={() => setModalActionsVisible(false)}
+                                                style={{ padding: 10 }}
+                                              >
+                                                <Text>Hủy</Text>
+                                              </TouchableOpacity>
+                                            </View>
+                                          </View>
+                                        </Modal>
+                                      </>
+                                    )}
+                                  </View>
+                                </View>
+                              </View>
                             </View>
                           </View>
-                        )}
+                        ))}
                       </>
                     )}
                   </View>
                 </View>
+              </View>
+            ))}
+          </>
+        )}
+      </ScrollView> */}
+      <ScrollView>
+        {comments === null ? (
+          <Text>Không có bình luận nào</Text>
+        ) : (
+          <>
+            {comments.content.map((comment) => (
+              <View key={comment.commentId}>
+                {CommentRender(
+                  comment,
+                  handleLikeComment,
+                  handleReplyComment,
+                  toggleModalReply,
+                  setModalActionsVisible,
+                  setSelectedCommentId,
+                  auth,
+                  modalActionsVisible,
+                )}
               </View>
             ))}
           </>
