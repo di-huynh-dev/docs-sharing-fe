@@ -33,12 +33,25 @@ const DocumentScreen = () => {
       }
     },
   })
+
+  const { data: topList, isLoading: topListLoading } = useQuery({
+    queryKey: ['TopList'],
+    queryFn: async () => {
+      try {
+        const resp = await axiosPrivate.get('/document/top10')
+        return resp.data.data
+      } catch (error) {
+        console.log(error)
+        throw new Error('Failed to fetch posts')
+      }
+    },
+  })
   const onRefresh = () => {
     setRefreshing(true)
     client.invalidateQueries(['Documents'])
     setRefreshing(false)
   }
-  if (documentLoading) {
+  if (documentLoading || topListLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -92,9 +105,9 @@ const DocumentScreen = () => {
       {/* Body */}
       <View className="mx-5">
         <Text className="text-lg font-bold">Nổi bật</Text>
-        {documents.length > 0 ? (
+        {topList.length > 0 ? (
           <FlatList
-            data={documents}
+            data={topList}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.docId}
