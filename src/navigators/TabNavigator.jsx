@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import { appColors } from '../constants/appColors'
@@ -56,9 +56,12 @@ const TabNavigator = () => {
               iconName = 'plus'
               size = 35
               return (
-                <View className="rounded-full bg-[#3588f4] w-16 h-16 items-center justify-center">
-                  <AntDesign name={iconName} size={size} color="white" onPress={() => setShowOptions(true)} />
-                </View>
+                <TouchableOpacity
+                  onPress={() => setShowOptions(true)}
+                  className="rounded-full bg-[#3588f4] w-16 h-16 items-center justify-center"
+                >
+                  <AntDesign name={iconName} size={size} color="white" />
+                </TouchableOpacity>
               )
             } else if (route.name === 'Profile') {
               iconName = 'person-outline'
@@ -72,9 +75,9 @@ const TabNavigator = () => {
         })}
       >
         <Tab.Screen name="Home" component={PostNavigator} />
-        <Tab.Screen name="Explore" component={ExploreNavigator} />
-        <Tab.Screen name="CreatePostScreen" component={AddPost} />
         <Tab.Screen name="Document" component={DocumentNavigator} />
+        <Tab.Screen name="CreatePostScreen" component={AddPost} />
+        <Tab.Screen name="Explore" component={ExploreNavigator} />
         <Tab.Screen name="Profile" component={ProfileNavigator} />
       </Tab.Navigator>
       {showOptions && (

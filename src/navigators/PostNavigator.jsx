@@ -1,6 +1,6 @@
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { PostComment, PostDetail, PostList, PostSearch } from '../screens'
+import { OtherUserProfile, PostComment, PostDetail, PostList, PostSearch } from '../screens'
 import AddDocument from '../screens/AddDocument'
 
 const PostNavigator = () => {
@@ -16,6 +16,7 @@ const PostNavigator = () => {
       <Stack.Screen name="PostDetailScreen" component={PostDetail} />
       <Stack.Screen name="CreateDocumentScreen" component={AddDocument} />
       <Stack.Screen name="PostSearchScreen" component={PostSearch} />
+      <Stack.Screen name="OtherUserProfileScreen" component={OtherUserProfile} />
     </Stack.Navigator>
   )
 }

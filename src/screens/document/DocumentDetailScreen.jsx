@@ -6,25 +6,25 @@ import { authSelector } from '../../redux/reducers/userSlice'
 import { useSelector } from 'react-redux'
 import Toast from 'react-native-toast-message'
 import { formatDate } from '../../utils/helpers'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const DocumentDetailScreen = ({ route }) => {
   const item = route.params.itemData
-  const auth = useSelector(authSelector)
+  const axiosPrivate = useAxiosPrivate()
+
   const handleLike = async () => {
     try {
-      const resp = await documentServices.likeDocument(auth.accessToken, item.docId)
+      const resp = await axiosPrivate.post('/document/' + item.docId + '/like')
       if (resp.status == 200) {
-        if (resp.message === 'Like document successfully') {
-          Toast.show({
-            type: 'success',
-            text1: '👍' + resp.message,
-          })
-        } else {
-          Toast.show({
-            type: 'info',
-            text1: '👎' + resp.message,
-          })
-        }
+        Toast.show({
+          type: 'success',
+          text1: '👍' + resp.data.message,
+        })
+      } else {
+        Toast.show({
+          type: 'info',
+          text1: '👎' + resp.message,
+        })
       }
     } catch (error) {}
   }
