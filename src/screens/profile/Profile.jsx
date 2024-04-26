@@ -1,5 +1,5 @@
 import { View, Text, Image, ScrollView, ActivityIndicator, SafeAreaView, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
@@ -8,7 +8,6 @@ import { FontAwesome } from '@expo/vector-icons'
 import { useSelector } from 'react-redux'
 import { formatDate } from '../../utils/helpers'
 import { Fontisto } from '@expo/vector-icons'
-import postServices from '../../apis/postServices'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Entypo } from '@expo/vector-icons'
@@ -119,6 +118,7 @@ const Profile = () => {
               </View>
             </TouchableOpacity>
           </View>
+
           {/* Tab */}
           <View className="mt-2 flex-row mx-2">
             <View className="w-1/3 m-auto mt-2">
@@ -163,7 +163,7 @@ const Profile = () => {
               >
                 <View className="flex-row  items-center justify-center ">
                   <Text className={`text-center text-${isLikeddActive && 'white'} font-bold items-center`}>
-                    Đã thích
+                    Yêu thích
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -199,6 +199,7 @@ const Profile = () => {
                   </Text>
                 </View>
               </View>
+
               <View className="mx-4 my-2">
                 <Text className="text-sm font-bold">Đóng góp</Text>
                 <Text className="text-center text-gray-400">

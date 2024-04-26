@@ -4,7 +4,6 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
-  Image,
   ActivityIndicator,
   StyleSheet,
   RefreshControl,
@@ -16,8 +15,6 @@ import { appColors } from '../../constants/appColors'
 import { Feather } from '@expo/vector-icons'
 import { Octicons } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
-import { TextInput } from 'react-native-gesture-handler'
-import Entypo from 'react-native-vector-icons/Entypo'
 import { AntDesign } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'

@@ -21,7 +21,10 @@ const PostVerticalItem = ({
   return (
     <View className="bg-white p-4 rounded-lg">
       <View className="flex-row justify-between">
-        <View className="flex-row items-center space-x-3">
+        <TouchableOpacity
+          onPress={() => navigation.navigate('OtherUserProfileScreen', { user: user })}
+          className="flex-row items-center space-x-3"
+        >
           {user.image ? (
             <Image source={{ uri: user.image }} style={{ width: 40, height: 40, borderRadius: 50 }} />
           ) : (
@@ -33,7 +36,7 @@ const PostVerticalItem = ({
             </Text>
             <Text className="text-sm text-gray-500">{formatDate(createdAt)}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         <View className="flex items-center justify-center">
           <TouchableOpacity className="bg-[#F1F4F5] w-[40px] h-[40px] rounded-full flex items-center justify-center">

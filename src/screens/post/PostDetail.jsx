@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import postServices from '../../apis/postServices'
-import Entypo from 'react-native-vector-icons/Entypo'
 import { AntDesign } from '@expo/vector-icons'
 import { Feather } from '@expo/vector-icons'
 import Spinner from 'react-native-loading-spinner-overlay'
@@ -16,7 +15,7 @@ import { EvilIcons } from '@expo/vector-icons'
 import CommentRender from '../../components/CommentRender'
 
 const PostDetail = ({ route }) => {
-  const { postId, shouldRefresh } = route.params
+  const { postId } = route.params
   const [isLoading, setIsLoading] = useState(false)
   const axiosPrivate = useAxiosPrivate()
   const auth = useSelector(authSelector)
@@ -195,6 +194,9 @@ const PostDetail = ({ route }) => {
         <View>
           <Text className="text-base font-bold mb-3">{postDetail?.title}</Text>
           <Text className="text-sm text-gray-500">{postDetail?.content}</Text>
+          {postDetail?.postImages && postDetail?.postImages.length > 0 && (
+            <Image source={{ uri: postDetail?.postImages[0].url }} className="w-full h-80 rounded-lg mt-5" />
+          )}
         </View>
 
         <View className="flex-row justify-end">
