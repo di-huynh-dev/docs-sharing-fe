@@ -1,4 +1,14 @@
-import { View, Text, SafeAreaView, TouchableOpacity, TextInput, Image, Button, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+  Image,
+  Button,
+  ActivityIndicator,
+  Modal,
+} from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
@@ -11,6 +21,7 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate'
 import { useQuery } from '@tanstack/react-query'
 import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list'
 import Toast from 'react-native-toast-message'
+import * as ImagePicker from 'expo-image-picker'
 
 const AddPost = () => {
   const user = useSelector(authSelector)
@@ -18,6 +29,8 @@ const AddPost = () => {
   const navigation = useNavigation()
   const [selectedTags, setSelectedTags] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [img, setImg] = useState('')
 
   const { data: tags, isLoading: isLoadingTags } = useQuery({
     queryKey: ['Tags'],
@@ -31,6 +44,46 @@ const AddPost = () => {
       }
     },
   })
+
+  const requestImageLibraryPermission = async (mode) => {
+    try {
+      if (mode === 'camera') {
+        await ImagePicker.requestCameraPermissionsAsync()
+        let result = await ImagePicker.launchCameraAsync({
+          cameraType: ImagePicker.CameraType.front,
+          allowsEditing: true,
+          aspects: [1, 1],
+          quality: 1,
+        })
+        if (!result.canceled) {
+          await saveImage(result.assets[0].uri)
+        }
+      } else {
+        await ImagePicker.requestMediaLibraryPermissionsAsync()
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 1,
+        })
+        if (!result.canceled) {
+          await saveImage(result.assets[0].uri)
+        }
+      }
+    } catch (err) {
+      console.warn('Error accessing image library:', err)
+      // Handle error here
+    }
+  }
+  const removeImage = () => {
+    setImg('')
+  }
+
+  const saveImage = async (image) => {
+    try {
+      setImg(image)
+    } catch (error) {}
+  }
 
   const schema = yup.object({
     title: yup.string().required(),
@@ -54,15 +107,28 @@ const AddPost = () => {
       })
       return
     }
-    const formData = {
+    const formData = new FormData()
+    const postRequestModel = {
       title: data.title,
       content: data.content,
       tagIds: selectedTags,
     }
+    formData.append('postRequestModel', JSON.stringify(postRequestModel))
+    if (img) {
+      formData.append('images', {
+        uri: img,
+        type: 'image/png',
+        name: 'image-doc',
+      })
+    }
     try {
       setIsLoading(true)
-      const resp = await axiosPrivate.post('/post/create', formData)
-      console.log(resp.status)
+      const resp = await axiosPrivate.post('/post/create', formData, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      })
       if (resp.status === 200) {
         setIsLoading(false)
 
@@ -91,7 +157,7 @@ const AddPost = () => {
     )
   }
   return (
-    <SafeAreaView>
+    <View>
       <View className="mx-2 flex-row items-center justify-between p-2">
         <TouchableOpacity
           onPress={() => {
@@ -109,8 +175,8 @@ const AddPost = () => {
       </View>
       <View className="mx-4">
         <View className="flex-row gap-2 items-center">
-          {user.profile.avatar ? (
-            <Image className="w-12 h-16 rounded-lg" source={{ uri: user.profile.avatar }} />
+          {user.profile.image ? (
+            <Image className="w-12 h-12 rounded-full" source={{ uri: user.profile.image }} />
           ) : (
             <Image source={require('../../assets/images/no-avatar.jpg')} className="w-14 h-14 rounded-full" />
           )}
@@ -167,8 +233,54 @@ const AddPost = () => {
           name="content"
         />
         {errors.content && <Text className="text-red-400">This is required.</Text>}
+        <Text className="text-[#3588f4] font-bold mb-4 mt-2">Tải lên hình ảnh</Text>
+
+        <TouchableOpacity className="flex-row gap-4 items-center" onPress={() => setIsModalVisible(true)}>
+          <AntDesign name="upload" size={24} color="black" />
+        </TouchableOpacity>
+        {img && (
+          <View>
+            <TouchableOpacity onPress={removeImage} className="absolute top-0 right-0">
+              <AntDesign name="delete" size={24} color="black" />
+            </TouchableOpacity>
+            <Image className="w-80 h-80 rounded-lg" source={{ uri: img }} />
+            <View className="flex-row justify-around">
+              {/* <Button title={isLoading ? 'Đang xử lý' : 'Xong'} onPress={handleUploadAvatar} /> */}
+            </View>
+          </View>
+        )}
+        {isModalVisible && (
+          <Modal animationType="fade" transparent={true}>
+            <SafeAreaView
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              <View className="bg-white p-2 rounded-lg w-80">
+                <Text className="text-center font-bold">Chọn hình ảnh</Text>
+                <View className="flex-row justify-around items-center">
+                  <TouchableOpacity onPress={() => requestImageLibraryPermission('camera')}>
+                    <AntDesign name="camera" size={24} color="black" />
+                    <Text>Camera</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => requestImageLibraryPermission('gallery')}>
+                    <AntDesign name="picture" size={24} color="black" />
+                    <Text>Thư viện</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+                    <AntDesign name="close" size={24} color="black" />
+                    <Text>Đóng</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </SafeAreaView>
+          </Modal>
+        )}
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

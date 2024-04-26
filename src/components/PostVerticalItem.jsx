@@ -49,7 +49,7 @@ const PostVerticalItem = ({
 
         <Text className="text-sm text-gray-500">{content}</Text>
         {postImages && postImages.length > 0 && (
-          <Image source={{ uri: postImages[0] }} className="w-full h-80 rounded-lg mt-5" />
+          <Image source={{ uri: postImages[0].url }} className="w-full h-80 rounded-lg mt-5" />
         )}
       </TouchableOpacity>
       <View className="flex-row justify-between mt-5 mb-2 mx-2">
