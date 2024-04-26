@@ -21,6 +21,7 @@ import AdminTag from './tag/AdminTag'
 import PostList from './post/PostList'
 import PostDetail from './post/PostDetail'
 import PostComment from './post/PostComment'
+import PostSearch from './post/PostSearch'
 import CreatePost from './post/CreatePost'
 
 export {
@@ -47,4 +48,6 @@ export {
   PostDetail,
   PostComment,
   CreatePost,
+  DocumentSearch,
+  PostSearch,
 }
