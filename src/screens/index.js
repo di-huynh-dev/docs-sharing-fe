@@ -7,6 +7,7 @@ import Onboarding from './auth/Onboarding'
 import NewPassword from './auth/NewPassword'
 import ForgetPassword from './auth/ForgetPassword'
 import DocumentScreen from './document/DocumentScreen'
+import DocumentSearch from './document/DocumentSearch'
 import EditDocumentScreen from './document/EditDocumentScreen'
 import AdminCategory from './category/AdminCategory'
 import AddCategory from './category/AddCategory'
@@ -20,6 +21,7 @@ import AdminTag from './tag/AdminTag'
 import PostList from './post/PostList'
 import PostDetail from './post/PostDetail'
 import PostComment from './post/PostComment'
+import PostSearch from './post/PostSearch'
 import CreatePost from './post/CreatePost'
 
 export {
@@ -46,4 +48,6 @@ export {
   PostDetail,
   PostComment,
   CreatePost,
+  DocumentSearch,
+  PostSearch,
 }

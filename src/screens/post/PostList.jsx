@@ -22,6 +22,7 @@ import { AntDesign } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import PostVerticalItem from '../../components/PostVerticalItem'
 
 const PostList = () => {
   const navigation = useNavigation()
@@ -90,11 +91,13 @@ const PostList = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <Text className="text-center text-white">Bạn muốn tìm kiếm tài liệu gì?</Text>
+        <Text className="text-center text-white">Bạn muốn tìm kiếm bài viết nào?</Text>
         <View className="flex-row justify-between p-5 items-center">
           <View className="flex-row items-center space-x-2">
             <Feather name="search" size={30} color="white" />
-            <TextInput placeholder="| Tìm kiếm.." className="text-lg text-white" />
+            <TouchableOpacity onPress={() => navigation.navigate('PostSearchScreen')}>
+              <Text>|Tìm kiếm....</Text>
+            </TouchableOpacity>
           </View>
 
           <View>
@@ -113,65 +116,7 @@ const PostList = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => {
-          return (
-            <View className="bg-white mx-5 rounded-2xl p-3 my-2" key={item.postId}>
-              <View className="flex-row justify-between">
-                <View className="flex-row items-center space-x-3">
-                  {item.user.image ? (
-                    <Image source={{ uri: item.user.image }} style={{ width: 40, height: 40, borderRadius: 50 }} />
-                  ) : (
-                    <Image
-                      source={require('../../../assets/images/no-avatar.jpg')}
-                      className="w-14 h-14 rounded-full"
-                    />
-                  )}
-                  <Text className="text-base font-bold">
-                    {item.user.firstName} {item.user.lastName}
-                  </Text>
-                </View>
-
-                <View className="flex items-center justify-center">
-                  <TouchableOpacity className="bg-[#F1F4F5] w-[40px] h-[40px] rounded-full flex items-center justify-center">
-                    <Entypo name="dots-three-horizontal" size={24} color="#99A1BE" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <TouchableOpacity
-                className="mt-5"
-                onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
-              >
-                <Text className="text-base font-bold mb-3">{item.title}</Text>
-
-                <Text className="text-sm text-gray-500">{item.content}</Text>
-              </TouchableOpacity>
-
-              <View className="flex-row justify-between mt-5 mb-2">
-                <View className="flex-row space-x-4">
-                  <TouchableOpacity onPress={() => handleLikePost(item.postId)}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {item.liked === true ? (
-                        <AntDesign name="heart" size={24} color="#f75050" style={{ marginRight: 5 }} />
-                      ) : (
-                        <AntDesign name="hearto" size={24} color="#f75050" style={{ marginRight: 5 }} />
-                      )}
-                      <Text>{item.totalLikes}</Text>
-                    </View>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity className="flex-row items-center space-x-2">
-                    <Entypo name="chat" size={24} color="#bbb" />
-                    <Text> Bình luận</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <TouchableOpacity className="flex-row items-center space-x-2">
-                  <Entypo name="share" size={24} color="#bbb" />
-                  <Text>11</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )
+          return <PostVerticalItem {...item} />
         }}
       />
       <TouchableOpacity style={styles.floatingButton}>
