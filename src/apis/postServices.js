@@ -21,7 +21,7 @@ const postServices = {
 
   likePost(accessToken, postId) {
     const url = '/post/' + postId + '/like'
-    return axiosClient.get(url, {
+    return axiosClient.post(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

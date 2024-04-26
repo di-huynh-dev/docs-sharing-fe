@@ -4,20 +4,41 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import { AntDesign } from '@expo/vector-icons'
 import { formatDate } from '../utils/helpers'
 import { useNavigation } from '@react-navigation/native'
+import useAxiosPrivate from '../hooks/useAxiosPrivate'
+import Toast from 'react-native-toast-message'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-const PostVerticalItem = ({
-  postId,
-  title,
-  content,
-  createdAt,
-  totalLikes,
-  totalComments,
-  user,
-  postImages,
-  liked,
-}) => {
+const PostVerticalItem = ({ postId, title, content, createdAt, totalComments, user, postImages }) => {
   const navigation = useNavigation()
+  const axiosPrivate = useAxiosPrivate()
+  const client = useQueryClient()
 
+  const { data: postDetail, isLoading } = useQuery({
+    queryKey: ['PostDetail', postId],
+    queryFn: async () => {
+      try {
+        const resp = await axiosPrivate.get('/post/' + postId)
+        return resp.data.data
+      } catch (error) {
+        console.log(error)
+        throw new Error('Failed to fetch posts')
+      }
+    },
+  })
+  const likePostMutation = useMutation({
+    mutationFn: async () => {
+      const resp = await axiosPrivate.post('/post/' + postId + '/like')
+      return resp
+    },
+    onSuccess: (resp) => {
+      client.invalidateQueries(['PostDetail', postId])
+      Toast.show({
+        type: 'success',
+        text1: resp.data.message,
+      })
+    },
+  })
+  if (isLoading) return null
   return (
     <View className="bg-white p-4 rounded-lg">
       <View className="flex-row justify-between">
@@ -57,14 +78,14 @@ const PostVerticalItem = ({
       </TouchableOpacity>
       <View className="flex-row justify-between mt-5 mb-2 mx-2">
         <View className="flex-row gap-2">
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => likePostMutation.mutate()}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {liked ? (
+              {postDetail.liked ? (
                 <AntDesign name="heart" size={24} color="#f75050" style={{ marginRight: 5 }} />
               ) : (
                 <AntDesign name="hearto" size={24} color="#f75050" style={{ marginRight: 5 }} />
               )}
-              <Text>{totalLikes}</Text>
+              <Text>{postDetail.totalLikes}</Text>
             </View>
           </TouchableOpacity>
 
