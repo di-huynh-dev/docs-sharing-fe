@@ -13,6 +13,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Entypo } from '@expo/vector-icons'
 import AddDocumentModal from '../../components/AddDocumentModal'
+import VerticalItem from '../../components/VerticalItem'
 
 const Profile = () => {
   const navigation = useNavigation()
@@ -21,24 +22,16 @@ const Profile = () => {
   const [isProfileActive, setIsProfileActive] = useState(true)
   const [isPhotoActive, setIsPhotoActive] = useState(false)
   const [isLikeddActive, setIsLikeddActive] = useState(false)
-  const [likedList, setLikedList] = useState([])
   const [showAddPostModal, setShowAddPostModal] = useState(false)
   const client = useQueryClient()
 
-  useEffect(() => {
-    fetchLiked()
-  }, [isProfileActive, isLikeddActive, isPhotoActive])
-
-  const fetchLiked = async () => {
-    try {
-      const resp = await postServices.getLikedPosts(user.accessToken, 0, 10)
-
-      if (resp.status === 200) {
-        setLikedList(resp.data.content)
-      }
-    } catch (error) {}
-  }
-
+  const { data: likedPostList, isLoading: likedPostListLoading } = useQuery({
+    queryKey: ['LikedPostList'],
+    queryFn: async () => {
+      const resp = await axiosPrivate.get('/post/liked?page=0&size=100')
+      return resp.data.data.content
+    },
+  })
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['Profile'],
     queryFn: async () => {
@@ -55,15 +48,23 @@ const Profile = () => {
     },
   })
 
-  const { data: likedPosts, isLoading: likedPostsLoading } = useQuery({
-    queryKey: ['LikedPostList'],
+  const { data: docList, isLoading: docListLoading } = useQuery({
+    queryKey: ['DocListMine'],
     queryFn: async () => {
-      const resp = await axiosPrivate.get('/post/liked?page=0&size=10')
+      const resp = await axiosPrivate.get('/document/user/documents?page=0&size=100')
       return resp.data.data.content
     },
   })
 
-  if (profileLoading || postLoading || likedPostsLoading)
+  const { data: likedDocList, isLoading: likedDocsLoading } = useQuery({
+    queryKey: ['LikedDocs'],
+    queryFn: async () => {
+      const resp = await axiosPrivate.get('/document/user/likes?page=0&size=10')
+      return resp.data.data.content
+    },
+  })
+
+  if (profileLoading || postLoading || likedDocsLoading || likedPostListLoading || docListLoading)
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -147,7 +148,7 @@ const Profile = () => {
                 }}
               >
                 <View className="flex-row  items-center justify-center">
-                  <Text className={`text-center text-${isPhotoActive && 'white'} font-bold items-center`}>Ảnh</Text>
+                  <Text className={`text-center text-${isPhotoActive && 'white'} font-bold items-center`}>Lưu trữ</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -198,46 +199,15 @@ const Profile = () => {
                   </Text>
                 </View>
               </View>
-
-              <View className="mx-4 my-2 ">
-                <Text className="text-sm font-bold">Bài viết đã chia sẻ</Text>
-                {posts.map((item) => {
-                  return (
-                    <View className="bg-white  rounded-2xl my-2" key={item.postId}>
-                      <View className="flex-row justify-between">
-                        <TouchableOpacity
-                          onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
-                          className=" flex-row items-center"
-                        >
-                          <Text>Bạn đã chia sẻ </Text>
-                          <Text className="text-base font-bold italic">{item.title}</Text>
-                          <Text> vào ngày {formatDate(item.createdAt)}</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  )
-                })}
-                {/* <FlatList
-                  className="flex-1"
-                  data={posts}
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={({ item }) => {
-                    return (
-                      <View className="bg-white  rounded-2xl my-2" key={item.postId}>
-                        <View className="flex-row justify-between">
-                          <TouchableOpacity
-                            onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
-                            className=" flex-row items-center"
-                          >
-                            <Text>Bạn đã chia sẻ </Text>
-                            <Text className="text-base font-bold italic">{item.title}</Text>
-                            <Text> vào ngày {formatDate(item.createdAt)}</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    )
-                  }}
-                /> */}
+              <View className="mx-4 my-2">
+                <Text className="text-sm font-bold">Đóng góp</Text>
+                <Text className="text-center text-gray-400">
+                  Tổng số bài viết: {profile.totalPosts}. Đã thích: {profile.totalPostLikes}
+                </Text>
+                <Text className="text-center text-gray-400">Tổng số tài liệu đã chia sẻ: {profile.totalDocuments}</Text>
+                <Text className="text-center text-gray-400">
+                  Tổng số bình luận: {profile.totalComments}. Đã thích: {profile.totalDocumentLikes}
+                </Text>
               </View>
 
               <View className="mx-4 my-2">
@@ -264,24 +234,67 @@ const Profile = () => {
 
           {/* Photo view */}
           {isPhotoActive && (
-            <View>
-              <Text>Photo view</Text>
-            </View>
-          )}
-          {/* Liked view */}
-          {isLikeddActive && (
-            <View className="mx-4">
-              <ScrollView>
-                {likedPosts.map((item) => {
+            <SafeAreaView className="flex-1 m-2">
+              <ScrollView className="mx-2">
+                <View className="flex-row my-2 items-center">
+                  <AntDesign name="book" size={24} color="black" />
+                  <Text className="text-sm font-bold">Bài viết của tôi</Text>
+                </View>
+                {posts.map((item) => {
                   return (
                     <TouchableOpacity
                       onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
                       className="flex-row items-center space-x-3"
                       key={item.postId}
                     >
-                      <View className="flex-row my-2 items-center justify-center">
+                      <View className="flex-row my-2 items-center">
+                        <Text>Bạn đã chia sẻ </Text>
+                        <Text className="text-base font-bold italic">{item.title}</Text>
+                        <Text> vào ngày {formatDate(item.createdAt)}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  )
+                })}
+                <View className="flex-row my-2 items-center">
+                  <Entypo name="text-document" size={24} color="black" />
+                  <Text className="text-sm font-bold">Tài liệu của tôi</Text>
+                </View>
+                {docList.map((item) => (
+                  <VerticalItem {...item} />
+                ))}
+              </ScrollView>
+            </SafeAreaView>
+          )}
+          {/* Liked view */}
+          {isLikeddActive && (
+            <View className="mx-4">
+              <ScrollView>
+                <Text className="text-sm font-bold">Bài viết yêu thích</Text>
+                {likedPostList.map((item) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
+                      className="flex-row items-center space-x-3"
+                      key={item.postId}
+                    >
+                      <View className="flex-row my-2 ">
                         <Text>Bạn đã thích bài viết của {item.user.firstName} về </Text>
                         <Text className="font-bold">{item.title}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  )
+                })}
+                <Text className="text-sm font-bold">Tài liệu yêu thích</Text>
+                {likedDocList.map((item) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}
+                      className="flex-row items-center space-x-3"
+                      key={item.docId}
+                    >
+                      <View className="flex-row my-2 ">
+                        <Text>Bạn đã thích tài liệu của {item.user.firstName} về </Text>
+                        <Text className="font-bold">{item.docName}</Text>
                       </View>
                     </TouchableOpacity>
                   )

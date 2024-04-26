@@ -49,7 +49,7 @@ const documentServices = {
 
   likeDocument(accessToken, docId) {
     const url = '/document/' + docId + '/like'
-    return axiosClient.get(url, {
+    return axiosClient.post(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
