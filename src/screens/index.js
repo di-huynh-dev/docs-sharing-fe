@@ -24,6 +24,8 @@ import PostComment from './post/PostComment'
 import PostSearch from './post/PostSearch'
 import CreatePost from './post/CreatePost'
 import OtherUserProfile from './profile/OtherUserProfile'
+import PostListAdmin from './post/PostListAdmin'
+import DocumentListAdmin from './document/DocumentListAdmin'
 
 export {
   HomeScreen,
@@ -32,6 +34,8 @@ export {
   Signup,
   OTP,
   OtherUserProfile,
+  DocumentListAdmin,
+  PostListAdmin,
   Onboarding,
   NewPassword,
   ForgetPassword,

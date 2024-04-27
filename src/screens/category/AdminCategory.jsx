@@ -1,43 +1,29 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
 import categoryServices from '../../apis/categoryServices'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import { formatDate } from '../../utils/helpers'
-
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
-import Spinner from 'react-native-loading-spinner-overlay'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-const AdminCategory = ({ category }) => {
-  const [categoryList, setCategoryList] = React.useState([])
-  const [isLoading, setIsLoading] = React.useState(false)
+const AdminCategory = () => {
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
+  const axiosPrivate = useAxiosPrivate()
+  const client = useQueryClient()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        const resp = await categoryServices.getAllCategories(auth.accessToken, 0, 100)
-        if (resp.status === 200) {
-          setCategoryList(resp.data.content)
-          setIsLoading(false)
-        } else {
-          Toast.show({
-            type: 'success',
-            text1: resp.message,
-          })
-          setIsLoading(false)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchData()
-  }, [navigation])
+  const { data: categoryList, isLoading: categoryListLoading } = useQuery({
+    queryKey: ['CategoryListAdmin'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/category/all?page=0&size=100')
+      return res.data.data.content
+    },
+  })
 
   const handleDeleteCategory = async (categoryId) => {
     try {
@@ -47,8 +33,7 @@ const AdminCategory = ({ category }) => {
           type: 'success',
           text1: resp.message,
         })
-        const updatedCategoryList = categoryList.filter((category) => category.categoryId !== categoryId)
-        setCategoryList(updatedCategoryList)
+        client.invalidateQueries(['CategoryListAdmin'])
       } else {
         Toast.show({
           type: 'error',
@@ -64,7 +49,14 @@ const AdminCategory = ({ category }) => {
     navigation.navigate('UpdateCategoryScreen', { categoryId })
   }
 
-  const data = categoryList.map((category) => [
+  if (categoryListLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    )
+  }
+  const data = categoryList?.map((category) => [
     category.categoryId.toString(),
     category.categoryName,
     formatDate(category.createdAt),
@@ -84,7 +76,6 @@ const AdminCategory = ({ category }) => {
       </TouchableOpacity>
     </View>,
   ])
-
   return (
     <SafeAreaView className=" bg-[#f3f3f8]">
       <ScrollView className="m-2">
@@ -127,7 +118,6 @@ const AdminCategory = ({ category }) => {
           </View>
         </ScrollView>
       </ScrollView>
-      <Spinner visible={isLoading} />
     </SafeAreaView>
   )
 }

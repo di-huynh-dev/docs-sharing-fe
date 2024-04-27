@@ -8,10 +8,12 @@ import { authSelector } from '../../redux/reducers/userSlice'
 import { useSelector } from 'react-redux'
 import Toast from 'react-native-toast-message'
 import fieldServices from '../../apis/fieldServices'
+import { useQueryClient } from '@tanstack/react-query'
 
 const AddField = () => {
   const navigation = useNavigation()
   const auth = useSelector(authSelector)
+  const queryClient = useQueryClient()
 
   const handAddField = async (values) => {
     try {
@@ -21,6 +23,7 @@ const AddField = () => {
           type: 'success',
           text1: resp.message,
         })
+        queryClient.invalidateQueries(['FieldListAdmin'])
         navigation.navigate('FieldScreen')
       } else {
         Toast.show({

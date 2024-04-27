@@ -1,43 +1,41 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native'
+import {
+  View,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native'
 import React, { useEffect } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
 import Spinner from 'react-native-loading-spinner-overlay'
-import categoryServices from '../../apis/categoryServices'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import { formatDate } from '../../utils/helpers'
 import tagServices from '../../apis/tagServices'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AdminTag = () => {
-  const [tagList, setTagList] = React.useState([])
+  // const [tagList, setTagList] = React.useState([])
   const [isLoading, setIsLoading] = React.useState(false)
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
+  const axiosPrivate = useAxiosPrivate()
+  const client = useQueryClient()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        const resp = await tagServices.getAllTags(auth.accessToken, 0, 100)
-        if (resp.status === 200) {
-          setTagList(resp.data.content)
-          setIsLoading(false)
-        } else {
-          Toast.show({
-            type: 'success',
-            text1: resp.message,
-          })
-          setIsLoading(false)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchData()
-  }, [navigation])
+  const { data: tagList, isLoading: tagListLoading } = useQuery({
+    queryKey: ['TagListAdmin'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/tag/all?page=0&size=100')
+      return res.data.data.content
+    },
+  })
 
   const handleDeleteTag = async (tagId) => {
     try {
@@ -47,8 +45,7 @@ const AdminTag = () => {
           type: 'success',
           text1: resp.message,
         })
-        const updatedTagList = tagList.filter((tag) => tag.categoryId !== tagId)
-        setTagList(updatedTagList)
+        client.invalidateQueries(['TagListAdmin'])
       } else {
         Toast.show({
           type: 'error',
@@ -63,7 +60,13 @@ const AdminTag = () => {
   const handleEditTag = (tagId) => {
     navigation.navigate('UpdateTagScreen', { tagId })
   }
-
+  if (tagListLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    )
+  }
   const data = tagList.map((tag) => [
     tag.tagId.toString(),
     tag.name,
