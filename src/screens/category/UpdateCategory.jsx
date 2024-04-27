@@ -9,12 +9,14 @@ import categoryServices from '../../apis/categoryServices'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import Toast from 'react-native-toast-message'
+import { useQueryClient } from '@tanstack/react-query'
 
 const UpdateCategory = ({ route }) => {
   const { categoryId } = route.params
   const navigation = useNavigation()
   const [isChecked, setChecked] = useState(false)
   const auth = useSelector(authSelector)
+  const queryClient = useQueryClient()
 
   const handUpdateCategory = async (values) => {
     try {
@@ -24,6 +26,7 @@ const UpdateCategory = ({ route }) => {
           type: 'success',
           text1: resp.message,
         })
+        queryClient.invalidateQueries(['CategoryListAdmin'])
         navigation.navigate('CategoryScreen')
       } else {
         Toast.show({

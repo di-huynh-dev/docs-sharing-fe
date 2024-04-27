@@ -8,12 +8,13 @@ import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import Toast from 'react-native-toast-message'
 import tagServices from '../../apis/tagServices'
+import { useQueryClient } from '@tanstack/react-query'
 
 const UpdateTag = ({ route }) => {
   const { tagId } = route.params
   const navigation = useNavigation()
   const auth = useSelector(authSelector)
-
+  const queryClient = useQueryClient()
   const handUpdateTag = async (values) => {
     try {
       const resp = await tagServices.updateTag(auth.accessToken, tagId, values.tagName)
@@ -22,6 +23,7 @@ const UpdateTag = ({ route }) => {
           type: 'success',
           text1: resp.message,
         })
+        queryClient.invalidateQueries(['TagListAdmin'])
         navigation.navigate('TagScreen')
       } else {
         Toast.show({

@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, ActivityIndicator, Modal } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector, removeAuth } from '../../redux/reducers/userSlice'
 import { SelectList } from 'react-native-dropdown-select-list'
@@ -8,45 +8,47 @@ import { Feather } from '@expo/vector-icons'
 import { Entypo } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { FontAwesome6 } from '@expo/vector-icons'
-import statsServices from '../../apis/statisticServices'
 import { LineChart } from 'react-native-chart-kit'
 import { formatDate } from '../../utils/helpers'
-import Spinner from 'react-native-loading-spinner-overlay'
+import { useQuery } from '@tanstack/react-query'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const AdminHomeScreen = () => {
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
-  const [summary, setSumary] = useState({})
-  const [documentStats, setDocumentStats] = useState(null)
-  const [registrationStats, setRegistrationStats] = useState(null)
-  const [postStats, setPostStats] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [isShowModal, setIsShowModal] = useState(false)
+  const axiosPrivate = useAxiosPrivate()
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        const res = await statsServices.getSumary(auth.accessToken)
-        setSumary(res.data)
+  const { data: summary, isLoading: summaryLoading } = useQuery({
+    queryKey: ['Summary'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/stats/stats/summary')
+      return res.data.data
+    },
+  })
 
-        const docResp = await statsServices.getDocumentStats(auth.accessToken)
-        setDocumentStats(docResp.data)
-
-        const registrationResp = await statsServices.getUserRegisteredStats(auth.accessToken)
-        setRegistrationStats(registrationResp.data)
-
-        const postResp = await statsServices.getUserPostStats(auth.accessToken)
-        setPostStats(postResp.data)
-
-        setIsLoading(false)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-    fetchData()
-  }, [auth])
+  const { data: documentStats, isLoading: documentStatsLoading } = useQuery({
+    queryKey: ['DocumentStats'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/stats/document/6month')
+      return res.data.data
+    },
+  })
+  const { data: registrationStats, isLoading: registrationStatsLoading } = useQuery({
+    queryKey: ['RegistrationStats'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/stats/registration/6month')
+      return res.data.data
+    },
+  })
+  const { data: postStats, isLoading: postStatsLoading } = useQuery({
+    queryKey: ['PostStats'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/stats/post/6month')
+      return res.data.data
+    },
+  })
 
   const logout = () => {
     dispatch(removeAuth())
@@ -115,6 +117,13 @@ const AdminHomeScreen = () => {
       stroke: '#ffa726',
     },
   }
+  if (documentStatsLoading || registrationStatsLoading || postStatsLoading || summaryLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    )
+  }
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       {isShowModal && (
@@ -151,7 +160,9 @@ const AdminHomeScreen = () => {
         <View className="my-2">
           <Text className="text-gray-500 font-bold">Chào mừng đã quay trở lại</Text>
           <View className="flex-row items-center gap-2">
-            <Text className="text-xl font-bold">{auth.profile?.firstName}</Text>
+            <Text className="text-xl font-bold">
+              {auth.profile?.firstName} {auth.profile?.lastName}
+            </Text>
             <TouchableOpacity onPress={() => setIsShowModal(true)}>
               <Entypo name="dots-three-vertical" size={24} color="black" />
             </TouchableOpacity>
@@ -192,7 +203,10 @@ const AdminHomeScreen = () => {
               </View>
               <Text className="text-4xl font-bold my-5">{summary.totalUsers}</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="w-1/2 shadow-lg bg-white p-4 rounded-xl">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PostListAdmin')}
+              className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
+            >
               <View className="flex-row justify-between items-center">
                 <Text className="text-lg font-bold">Bài viết</Text>
                 <View className="w-8 h-8 items-center justify-center rounded-lg bg-green-200">
@@ -204,7 +218,10 @@ const AdminHomeScreen = () => {
           </View>
 
           <View className="flex-row justify-between gap-2 my-2">
-            <TouchableOpacity className="w-1/2 shadow-lg bg-white p-4 rounded-xl">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('DocumentListAdmin')}
+              className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
+            >
               <View className="flex-row justify-between items-center">
                 <Text className="text-lg font-bold">Tài liệu</Text>
                 <View className="w-8 h-8 items-center justify-center rounded-lg bg-blue-200">
@@ -272,7 +289,6 @@ const AdminHomeScreen = () => {
           </View>
         </View>
       </ScrollView>
-      <Spinner visible={isLoading} />
     </SafeAreaView>
   )
 }

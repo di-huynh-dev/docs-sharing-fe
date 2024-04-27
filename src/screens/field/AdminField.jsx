@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
 import { useNavigation } from '@react-navigation/native'
@@ -8,35 +8,22 @@ import { authSelector } from '../../redux/reducers/userSlice'
 import fieldServices from '../../apis/fieldServices'
 import { formatDate } from '../../utils/helpers'
 import Toast from 'react-native-toast-message'
-import Spinner from 'react-native-loading-spinner-overlay'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AdminField = () => {
-  const [fieldList, setFieldList] = React.useState([])
-  const [isLoading, setIsLoading] = React.useState(false)
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
+  const axiosPrivate = useAxiosPrivate()
+  const client = useQueryClient()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      try {
-        const resp = await fieldServices.getAllFields(auth.accessToken, 0, 100)
-        if (resp.status === 200) {
-          setFieldList(resp.data.content)
-          setIsLoading(false)
-        } else {
-          Toast.show({
-            type: 'success',
-            text1: resp.message,
-          })
-          setIsLoading(false)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchData()
-  }, [navigation])
+  const { data: fieldList, isLoading: fieldListLoading } = useQuery({
+    queryKey: ['FieldListAdmin'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/field/all?page=0&size=100')
+      return res.data.data.content
+    },
+  })
 
   const handleDeleteField = async (fieldId) => {
     try {
@@ -46,8 +33,7 @@ const AdminField = () => {
           type: 'success',
           text1: resp.message,
         })
-        const updatedFieldList = fieldList.filter((category) => category.fieldId !== fieldId)
-        setFieldList(updatedFieldList)
+        client.invalidateQueries(['FieldListAdmin'])
       } else {
         Toast.show({
           type: 'error',
@@ -63,6 +49,13 @@ const AdminField = () => {
     navigation.navigate('UpdateFieldScreen', { fieldId })
   }
 
+  if (fieldListLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    )
+  }
   const data = fieldList.map((field) => [
     field.fieldId.toString(),
     field.fieldName,
@@ -126,7 +119,6 @@ const AdminField = () => {
           </View>
         </ScrollView>
       </ScrollView>
-      <Spinner visible={isLoading} />
     </SafeAreaView>
   )
 }

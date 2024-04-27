@@ -47,7 +47,7 @@ const OtherUserProfile = ({ route }) => {
     )
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView className="py-2">
       <View className="flex-row gap-2 items-center">
         <TouchableOpacity onPress={() => navigation.navigate('PostListScreen')}>
           <Ionicons name="arrow-back" size={24} color="black" />
@@ -155,7 +155,7 @@ const OtherUserProfile = ({ route }) => {
                     <Text>
                       {item.user.lastName} {item.user.firstName} đã chia sẻ
                     </Text>
-                    <Text className="text-base font-bold italic">{item.title}</Text>
+                    <Text className="text-base font-bold italic"> {item.title}</Text>
                     <Text> vào ngày {formatDate(item.createdAt)}</Text>
                   </View>
                 </TouchableOpacity>

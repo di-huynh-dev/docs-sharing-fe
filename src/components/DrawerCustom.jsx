@@ -23,11 +23,6 @@ const DrawerCustom = () => {
   return (
     <View style={[localStyles.container]}>
       <View className="mb-10 flex-row items-center gap-2 ">
-        {user.profile.image ? (
-          <Image source={{ uri: user.profile.image }} className="w-12 h-12  rounded-full " />
-        ) : (
-          <Image className="w-12 h-12 rounded-full " source={require('../../assets/images/no-avatar.jpg')} />
-        )}
         <Text className="text-xl font-bold text-center">
           {user.profile?.lastName} {user.profile?.firstName}
         </Text>

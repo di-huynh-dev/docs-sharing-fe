@@ -8,7 +8,7 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { globalStyles } from '../../styles/globalStyles'
 import { appColors } from '../../constants/appColors'
@@ -16,7 +16,6 @@ import { Feather } from '@expo/vector-icons'
 import { Octicons } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
 import { AntDesign } from '@expo/vector-icons'
-import Toast from 'react-native-toast-message'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import PostVerticalItem from '../../components/PostVerticalItem'
@@ -26,12 +25,16 @@ const PostList = () => {
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
   const [refreshing, setRefreshing] = useState(false)
+  const [postsData, setPostsData] = useState([])
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
 
   const { data: posts, isLoading } = useQuery({
-    queryKey: ['Posts'],
+    queryKey: ['Posts', page],
     queryFn: async () => {
       try {
-        const resp = await axiosPrivate.get('/post/all?page=0&size=100')
+        const resp = await axiosPrivate.get('/post/all?page=' + page + '&size=10')
         return resp
       } catch (error) {
         console.log(error)
@@ -39,26 +42,23 @@ const PostList = () => {
       }
     },
   })
+  useEffect(() => {
+    if (posts) {
+      if (posts.data.data.content.length === 0) {
+        setHasMore(false)
+      }
+      setPostsData((prevPostsData) => [...prevPostsData, ...posts.data.data.content])
+    }
+  }, [posts])
   const onRefresh = () => {
     setRefreshing(true)
     client.invalidateQueries(['Posts'])
     setRefreshing(false)
+    setPage(0)
+    setPostsData([])
+    setHasMore(true)
   }
-  const handleLikePost = async (postId) => {
-    try {
-      const resp = await axiosPrivate.post('/post/' + postId + '/like')
 
-      if (resp.status === 200) {
-        Toast.show({
-          type: 'success',
-          text1: resp.data.message,
-        })
-        client.invalidateQueries(['Posts'])
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -66,6 +66,7 @@ const PostList = () => {
       </View>
     )
   }
+
   return (
     <View style={[globalStyles.container]}>
       <StatusBar barStyle={'light-content'} />
@@ -109,18 +110,29 @@ const PostList = () => {
       {/* Body */}
       <FlatList
         className="flex-1 mb-5"
-        data={posts.data.data.content}
+        data={postsData}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => {
           return <PostVerticalItem {...item} />
         }}
+        onEndReached={() => {
+          if (hasMore) {
+            setPage(page + 1)
+            client.invalidateQueries(['Posts'])
+          }
+        }}
+        onEndReachedThreshold={0.2}
+        ListFooterComponent={
+          isLoading && (
+            <TouchableOpacity style={styles.floatingButton}>
+              <Text className="text-[#5D56F3] m-5">
+                <AntDesign name="upcircleo" size={24} color="black" />
+              </Text>
+            </TouchableOpacity>
+          )
+        }
       />
-      <TouchableOpacity style={styles.floatingButton}>
-        <Text className="text-[#5D56F3] m-5">
-          <AntDesign name="upcircleo" size={24} color="black" />
-        </Text>
-      </TouchableOpacity>
     </View>
   )
 }

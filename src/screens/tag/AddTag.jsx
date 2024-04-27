@@ -4,16 +4,16 @@ import * as yup from 'yup'
 import { Formik } from 'formik'
 import { AntDesign } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-import categoryServices from '../../apis/categoryServices'
 import { authSelector } from '../../redux/reducers/userSlice'
 import { useSelector } from 'react-redux'
 import Toast from 'react-native-toast-message'
 import tagServices from '../../apis/tagServices'
+import { useQueryClient } from '@tanstack/react-query'
 
 const AddTag = () => {
   const navigation = useNavigation()
   const auth = useSelector(authSelector)
-
+  const queryClient = useQueryClient()
   const handAddCategory = async (values) => {
     try {
       const resp = await tagServices.addTag(auth.accessToken, values.tagName)
@@ -22,6 +22,7 @@ const AddTag = () => {
           type: 'success',
           text1: resp.message,
         })
+        queryClient.invalidateQueries(['TagListAdmin'])
         navigation.navigate('TagScreen')
       } else {
         Toast.show({
