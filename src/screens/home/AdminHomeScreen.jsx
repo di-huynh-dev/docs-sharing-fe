@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector, removeAuth } from '../../redux/reducers/userSlice'
 import { SelectList } from 'react-native-dropdown-select-list'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { Feather } from '@expo/vector-icons'
 import { Entypo } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
@@ -194,7 +194,7 @@ const AdminHomeScreen = () => {
 
         <View>
           <Text>Quản lý hệ thống</Text>
-          <View className="flex-row justify-between gap-2 my-2">
+          <View className="flex-row justify-between gap-2 my-1">
             <TouchableOpacity
               onPress={() => navigation.navigate('AdminUser')}
               className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
@@ -212,7 +212,7 @@ const AdminHomeScreen = () => {
               className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
             >
               <View className="flex-row justify-between items-center">
-                <Text className="text-lg font-bold">Bài viết</Text>
+                <Text className="text-lg font-bold">Bài đăng</Text>
                 <View className="w-8 h-8 items-center justify-center rounded-lg bg-green-200">
                   <AntDesign name="filetext1" size={24} color="green" />
                 </View>
@@ -221,7 +221,7 @@ const AdminHomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row justify-between gap-2 my-2">
+          <View className="flex-row justify-between gap-2 my-1">
             <TouchableOpacity
               onPress={() => navigation.navigate('DocumentListAdmin')}
               className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
@@ -248,7 +248,7 @@ const AdminHomeScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row justify-between gap-2 my-2">
+          <View className="flex-row justify-between gap-2 my-1">
             <TouchableOpacity
               className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
               onPress={() => navigation.navigate('AdminTagNavigator')}
@@ -269,6 +269,33 @@ const AdminHomeScreen = () => {
                 <Text className="text-lg font-bold">Lĩnh vực</Text>
                 <View className="w-8 h-8 items-center justify-center rounded-lg bg-purple-200">
                   <FontAwesome6 name="people-line" size={24} color="black" />
+                </View>
+              </View>
+              <Text className="text-4xl font-bold my-5">{summary.totalFields}</Text>
+            </TouchableOpacity>
+          </View>
+          <Text>Báo cáo vi phạm</Text>
+          <View className="flex-row justify-between gap-2 my-1">
+            <TouchableOpacity
+              className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
+              onPress={() => navigation.navigate('AdminDocumentReported')}
+            >
+              <View className="flex-row justify-between items-center">
+                <Text className="text-lg font-bold">Tài liệu</Text>
+                <View className="w-8 h-8 items-center justify-center rounded-lg bg-orange-200">
+                  <MaterialIcons name="report" size={24} color="orange" />
+                </View>
+              </View>
+              <Text className="text-4xl font-bold my-5">{summary.totalTags}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
+              onPress={() => navigation.navigate('AdminPostReported')}
+            >
+              <View className="flex-row justify-between items-center">
+                <Text className="text-lg font-bold">Bài đăng</Text>
+                <View className="w-8 h-8 items-center justify-center rounded-lg bg-red-200">
+                  <MaterialIcons name="report-problem" size={24} color="red" />
                 </View>
               </View>
               <Text className="text-4xl font-bold my-5">{summary.totalFields}</Text>

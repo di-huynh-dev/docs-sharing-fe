@@ -1,20 +1,9 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  FlatList,
-  ScrollView,
-  Modal,
-  TextInput,
-  ActivityIndicator,
-} from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, Modal, TextInput, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import { AntDesign } from '@expo/vector-icons'
 import { Feather } from '@expo/vector-icons'
-import Spinner from 'react-native-loading-spinner-overlay'
 import commentServices from '../../apis/commentService'
 import { formatDate } from '../../utils/helpers'
 import Toast from 'react-native-toast-message'

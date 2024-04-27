@@ -27,8 +27,16 @@ import OtherUserProfile from './profile/OtherUserProfile'
 import PostListAdmin from './post/PostListAdmin'
 import DocumentListAdmin from './document/DocumentListAdmin'
 import AdminUser from './user/AdminUser'
+import DocumentReported from './report/DocumentReported'
+import PostReported from './report/PostReported'
+import DocumentReportDetail from './report/DocumentReportDetail'
+import PostReportDetail from './report/PostReportDetail'
 
 export {
+  PostReportDetail,
+  DocumentReportDetail,
+  DocumentReported,
+  PostReported,
   AdminUser,
   HomeScreen,
   Splash,

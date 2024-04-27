@@ -5,7 +5,15 @@ import FieldNavigator from './FieldNavigator'
 import CategoryNavigator from './CategoryNavigator'
 import AdminHomeNavigator from './AdminHomeNavigator'
 import UserNavigator from './UserNavigator'
-import { AdminUser, DocumentListAdmin, PostListAdmin } from '../screens'
+import {
+  AdminUser,
+  DocumentListAdmin,
+  DocumentReportDetail,
+  DocumentReported,
+  PostListAdmin,
+  PostReportDetail,
+  PostReported,
+} from '../screens'
 
 const AdminMainNavigator = () => {
   const Stack = createNativeStackNavigator()
@@ -19,6 +27,10 @@ const AdminMainNavigator = () => {
       <Stack.Screen name="AdminFieldNavigator" component={FieldNavigator} />
       <Stack.Screen name="AdminUserNavigator" component={UserNavigator} />
       <Stack.Screen name="AdminCategoryNavigator" component={CategoryNavigator} />
+      <Stack.Screen name="AdminDocumentReported" component={DocumentReported} />
+      <Stack.Screen name="AdminDocumentReportDetail" component={DocumentReportDetail} />
+      <Stack.Screen name="AdminPostReportDetail" component={PostReportDetail} />
+      <Stack.Screen name="AdminPostReported" component={PostReported} />
     </Stack.Navigator>
   )
 }
