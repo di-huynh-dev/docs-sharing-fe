@@ -13,6 +13,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AdminField = () => {
   const auth = useSelector(authSelector)
+  console.log(auth.accessToken)
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
