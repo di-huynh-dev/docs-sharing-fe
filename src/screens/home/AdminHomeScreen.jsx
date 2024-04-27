@@ -15,6 +15,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const AdminHomeScreen = () => {
   const auth = useSelector(authSelector)
+
   const navigation = useNavigation()
   const [isShowModal, setIsShowModal] = useState(false)
   const axiosPrivate = useAxiosPrivate()
@@ -194,7 +195,10 @@ const AdminHomeScreen = () => {
         <View>
           <Text>Quản lý hệ thống</Text>
           <View className="flex-row justify-between gap-2 my-2">
-            <TouchableOpacity className="w-1/2 shadow-lg bg-white p-4 rounded-xl">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AdminUser')}
+              className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
+            >
               <View className="flex-row justify-between items-center">
                 <Text className="text-lg font-bold">Người dùng</Text>
                 <View className="w-8 h-8 items-center justify-center rounded-lg bg-orange-200">

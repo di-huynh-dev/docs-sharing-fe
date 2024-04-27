@@ -96,7 +96,7 @@ const DocumentListAdmin = () => {
       <ScrollView className="m-2">
         <TouchableOpacity
           className="flex-row items-center gap-2"
-          onPress={() => navigation.navigate('DocumentListAdmin')}
+          onPress={() => navigation.navigate('AdminHomeScreen')}
         >
           <AntDesign name="arrowleft" size={24} color="black" />
           <Text className="text-lg font-bold">Quản lý tài liệu hệ thống</Text>
