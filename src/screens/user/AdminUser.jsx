@@ -1,41 +1,36 @@
-import { View, Text, ActivityIndicator, Image, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ActivityIndicator, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { AntDesign, FontAwesome6 } from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 import { formatDate } from '../../utils/helpers'
 import { Table, Row, Rows } from 'react-native-table-component'
 import Toast from 'react-native-toast-message'
 
-const PostListAdmin = () => {
+const AdminUser = () => {
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
-
-  const { data: posts, isLoading: postLoading } = useQuery({
-    queryKey: ['Posts'],
+  const { data: userList, isLoading: userListLoading } = useQuery({
+    queryKey: ['UserList'],
     queryFn: async () => {
-      try {
-        const resp = await axiosPrivate.get('/post/all?page=0&size=100&order=oldest')
-        return resp.data.data.content
-      } catch (error) {
-        console.log(error)
-        throw new Error('Failed to fetch posts')
-      }
+      const res = await axiosPrivate.get('/users/all?page=0&size=100')
+      return res.data.data.content
     },
   })
-  const deletePostMutation = useMutation({
-    mutationKey: ['DeletePost'],
-    mutationFn: async (docId) => {
+
+  const deleteUserMutation = useMutation({
+    mutationKey: ['DeleteUser'],
+    mutationFn: async (userId) => {
       try {
-        const resp = await axiosPrivate.delete(`/post/${docId}`)
+        const resp = await axiosPrivate.delete(`/users/${userId}`)
         if (resp.status === 200) {
           Toast.show({
             type: 'success',
             text1: resp.data.message,
           })
-          client.invalidateQueries(['Posts'])
+          client.invalidateQueries(['UserList'])
         }
       } catch (error) {
         console.log(error)
@@ -43,7 +38,7 @@ const PostListAdmin = () => {
       }
     },
   })
-  if (postLoading) {
+  if (userListLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -51,30 +46,27 @@ const PostListAdmin = () => {
     )
   }
 
-  const data = posts?.map((post) => [
-    post.postId,
-    post.postImages.length > 0 ? (
-      <Image source={{ uri: post.postImages[0].url }} style={{ width: 50, height: 50 }} />
+  const data = userList.map((user) => [
+    user.userId,
+    <Text>
+      {user.firstName} {user.lastName}
+    </Text>,
+    user.email,
+    user.gender === 0 ? <Text>Nam</Text> : <Text>Nữ</Text>,
+    formatDate(user.createdAt),
+    formatDate(user.updatedAt),
+    user.role.roleName,
+    user.disabled ? (
+      <AntDesign name="close" size={24} color="red" />
     ) : (
-      <AntDesign name="picture" size={24} color="black" />
+      <AntDesign name="check" size={24} color="green" />
     ),
-    post.title,
-    formatDate(post.createdAt),
-    formatDate(post.updatedAt),
-    post.totalComments,
-    post.totalLikes,
-    post.user.firstName,
-
     <View className="flex-row gap-2 justify-around my-1">
-      <TouchableOpacity onPress={() => deletePostMutation.mutate(post.postId)}>
-        <AntDesign name="delete" size={20} color="blue" style={{ marginRight: 10 }} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleEditpost(doc.docId)}>
-        <FontAwesome6 name="ban" size={20} color="red" />
+      <TouchableOpacity onPress={() => deleteUserMutation.mutate(user.userId)}>
+        <AntDesign name="delete" size={20} color="red" style={{ marginRight: 10 }} />
       </TouchableOpacity>
     </View>,
   ])
-
   return (
     <SafeAreaView className=" bg-[#f3f3f8]">
       <ScrollView className="m-2">
@@ -93,14 +85,14 @@ const PostListAdmin = () => {
           <Table borderStyle={{ borderWidth: 2, borderColor: '#c8eefa' }} style={{ width: 900 }}>
             <Row
               data={[
-                'Mã bài đăng',
-                'Thumbnail',
-                'Tiêu đề',
+                'Mã người dùng',
+                'Họ và tên',
+                'Email',
+                'Giới tính',
                 'Ngày tạo',
                 'Ngày cập nhật',
-                'Tổng lượt bình luận',
-                'Tổng lượt thích',
-                'Người tạo',
+                'Vai trò',
+                'Trạng thái tài khoản',
                 'Thao tác',
               ]}
               style={{
@@ -117,4 +109,4 @@ const PostListAdmin = () => {
   )
 }
 
-export default PostListAdmin
+export default AdminUser

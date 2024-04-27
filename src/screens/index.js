@@ -26,8 +26,10 @@ import CreatePost from './post/CreatePost'
 import OtherUserProfile from './profile/OtherUserProfile'
 import PostListAdmin from './post/PostListAdmin'
 import DocumentListAdmin from './document/DocumentListAdmin'
+import AdminUser from './user/AdminUser'
 
 export {
+  AdminUser,
   HomeScreen,
   Splash,
   Login,
