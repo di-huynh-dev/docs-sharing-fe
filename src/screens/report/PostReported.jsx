@@ -2,7 +2,7 @@ import { View, Text, ActivityIndicator, SafeAreaView, ScrollView, TouchableOpaci
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { formatDate } from '../../utils/helpers'
 import { AntDesign, Entypo } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
@@ -36,7 +36,7 @@ const PostReported = () => {
     <Text>
       {report.user.firstName} {report.user.lastName}
     </Text>,
-    report.read ? <Text>Đã xem</Text> : <Text className="text-red-500">Chưa xem</Text>,
+    report.read ? <Text className="text-green-500">Đã xem</Text> : <Text className="text-red-500">Chưa xem</Text>,
     <View className="flex-row gap-2 justify-around my-1">
       <TouchableOpacity onPress={() => navigation.navigate('AdminPostReportDetail', { reportId: report.reportId })}>
         <Entypo name="dots-three-horizontal" size={24} color="black" />

@@ -123,7 +123,7 @@ const AdminCategory = () => {
                   'Ngày tạo',
                   'Ngày cập nhật',
                   'Tổng người dùng',
-                  'Trạng thái',
+                  'Trạng thái ',
                   'Thao tác',
                 ]}
                 style={{ height: 70 }}

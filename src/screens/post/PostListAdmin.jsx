@@ -28,6 +28,7 @@ const PostListAdmin = () => {
   const auth = useSelector(authSelector)
   const client = useQueryClient()
   const [searchQuery, setSearchQuery] = useState('')
+
   const { data: posts, isLoading: postLoading } = useQuery({
     queryKey: ['Posts'],
     queryFn: async () => {
@@ -126,9 +127,6 @@ const PostListAdmin = () => {
     <View className="flex-row gap-2 justify-around my-1">
       <TouchableOpacity onPress={() => deletePostMutation.mutate(post.postId)}>
         <AntDesign name="delete" size={20} color="blue" style={{ marginRight: 10 }} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleEditpost(doc.docId)}>
-        <FontAwesome6 name="ban" size={20} color="red" />
       </TouchableOpacity>
     </View>,
   ])

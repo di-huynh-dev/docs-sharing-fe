@@ -21,7 +21,6 @@ const UpdateField = ({ route }) => {
   const handUpdateField = async (values) => {
     try {
       const resp = await fieldServices.updateField(auth.accessToken, fieldId, values.fieldName, isChecked)
-      console.log(resp)
 
       if (resp.status === 200) {
         Toast.show({
@@ -66,7 +65,7 @@ const UpdateField = ({ route }) => {
             </View>
             {errors.fieldName && <Text className="text-red-500 text-sm">{errors.fieldName}</Text>}
             <View className="flex-row items-center gap-4 my-2">
-              <Text>Trạng thái hoạt động</Text>
+              <Text>Trạng thái: Ẩn</Text>
               <Checkbox value={isChecked} onValueChange={setChecked} />
             </View>
 

@@ -14,7 +14,7 @@ import { useQueryClient } from '@tanstack/react-query'
 const UpdateCategory = ({ route }) => {
   const { categoryId } = route.params
   const navigation = useNavigation()
-  const [isChecked, setChecked] = useState(false)
+  const [isChecked, setChecked] = useState(true)
   const auth = useSelector(authSelector)
   const queryClient = useQueryClient()
 
@@ -68,7 +68,7 @@ const UpdateCategory = ({ route }) => {
             </View>
             {errors.categoryName && <Text className="text-red-500 text-sm">{errors.categoryName}</Text>}
             <View className="flex-row items-center gap-4 my-2">
-              <Text>Trạng thái hoạt động</Text>
+              <Text>Trạng thái: Ẩn</Text>
               <Checkbox value={isChecked} onValueChange={setChecked} />
             </View>
 
