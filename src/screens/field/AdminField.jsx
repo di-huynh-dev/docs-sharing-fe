@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
-import React from 'react'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native'
+import React, { useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
 import { useNavigation } from '@react-navigation/native'
@@ -10,19 +10,21 @@ import { formatDate } from '../../utils/helpers'
 import Toast from 'react-native-toast-message'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Feather } from '@expo/vector-icons'
 
 const AdminField = () => {
   const auth = useSelector(authSelector)
-  console.log(auth.accessToken)
+
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+  const [searchQuery, setSearchQuery] = useState('')
 
   const { data: fieldList, isLoading: fieldListLoading } = useQuery({
     queryKey: ['FieldListAdmin'],
     queryFn: async () => {
-      const res = await axiosPrivate.get('/field/all?page=0&size=100')
-      return res.data.data.content
+      const resp = await axiosPrivate.get('/field/search?page=0&size=100&q=' + searchQuery)
+      return resp.data.data.content
     },
   })
 
@@ -44,6 +46,9 @@ const AdminField = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+  const handleSearch = () => {
+    client.invalidateQueries(['FieldListAdmin'])
   }
 
   const handleEditField = (fieldId) => {
@@ -86,10 +91,20 @@ const AdminField = () => {
           onPress={() => navigation.navigate('AdminHomeScreen')}
         >
           <AntDesign name="arrowleft" size={24} color="black" />
-          <Text className="text-lg font-bold">Quản lý lĩnh vực tài liệu</Text>
+          <Text className="text-lg font-bold">Quản lý lĩnh vực </Text>
         </TouchableOpacity>
-        <View className="my-2 flex-row justify-between">
-          <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
+
+        <View className="flex-row justify-between">
+          <View className="flex-row items-center space-x-2 p-2 rounded-lg bg-white  w-4/5">
+            <TouchableOpacity onPress={handleSearch}>
+              <Feather name="search" size={30} color="gray" />
+            </TouchableOpacity>
+            <TextInput
+              placeholder="Nhập từ khóa tìm kiếm..."
+              onChangeText={(text) => setSearchQuery(text)}
+              onSubmitEditing={handleSearch}
+            />
+          </View>
           <TouchableOpacity
             className="bg-[#ffffff] rounded-xl h-14 w-14 justify-center"
             onPress={() => navigation.navigate('AddFieldScreen')}
@@ -98,6 +113,9 @@ const AdminField = () => {
               <AntDesign name="plus" size={24} color="gray" />
             </View>
           </TouchableOpacity>
+        </View>
+        <View className="my-2 flex-row justify-between">
+          <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
         </View>
         <ScrollView horizontal={true} className="bg-white">
           <View>

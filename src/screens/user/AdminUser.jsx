@@ -7,11 +7,13 @@ import { AntDesign } from '@expo/vector-icons'
 import { formatDate } from '../../utils/helpers'
 import { Table, Row, Rows } from 'react-native-table-component'
 import Toast from 'react-native-toast-message'
+import { LineChart } from 'react-native-chart-kit'
 
 const AdminUser = () => {
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+
   const { data: userList, isLoading: userListLoading } = useQuery({
     queryKey: ['UserList'],
     queryFn: async () => {
@@ -38,7 +40,46 @@ const AdminUser = () => {
       }
     },
   })
-  if (userListLoading) {
+  const { data: registrationStats, isLoading: registrationStatsLoading } = useQuery({
+    queryKey: ['RegistrationStats'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/stats/registration/6month')
+      return res.data.data
+    },
+  })
+
+  const chartDataRegistration = {
+    labels: Array.from({ length: 6 }, (_, i) => {
+      const currentDate = new Date()
+      currentDate.setMonth(currentDate.getMonth() - i)
+      const month = currentDate.getMonth() + 1 // 0-11
+      const year = currentDate.getFullYear()
+      return `${month.toString().padStart(2, '0')}/${year}`
+    }).reverse(),
+    datasets: [
+      {
+        data: registrationStats,
+        color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+        strokeWidth: 2,
+      },
+    ],
+  }
+
+  const chartConfig = {
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+    propsForDots: {
+      r: '6',
+      strokeWidth: '2',
+      stroke: '#ffa726',
+    },
+  }
+  if (userListLoading || registrationStatsLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -67,6 +108,7 @@ const AdminUser = () => {
       </TouchableOpacity>
     </View>,
   ])
+
   return (
     <SafeAreaView className=" bg-[#f3f3f8]">
       <ScrollView className="m-2">
@@ -75,11 +117,19 @@ const AdminUser = () => {
           onPress={() => navigation.navigate('AdminHomeScreen')}
         >
           <AntDesign name="arrowleft" size={24} color="black" />
-          <Text className="text-lg font-bold">Quản lý tài liệu hệ thống</Text>
+          <Text className="text-lg font-bold">Quản lý người dùng hệ thống</Text>
         </TouchableOpacity>
 
-        <View className="my-2 flex-row justify-between">
-          <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
+        {registrationStats && (
+          <View>
+            <Text className="font-bold my-2 text-center">Thống kê người dùng đăng ký 4 tháng gần đây</Text>
+            <LineChart data={chartDataRegistration} width={380} height={220} chartConfig={chartConfig} bezier />
+          </View>
+        )}
+
+        <View className="my-2">
+          <Text className="text-sm font-bold my-2">Danh sách người dùng hệ thống</Text>
+          <Text>Tổng cộng: {data.length} kết quả</Text>
         </View>
         <ScrollView horizontal={true} className="bg-white">
           <Table borderStyle={{ borderWidth: 2, borderColor: '#c8eefa' }} style={{ width: 900 }}>

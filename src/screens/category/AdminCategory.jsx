@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
-import React from 'react'
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native'
+import React, { useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
 import categoryServices from '../../apis/categoryServices'
@@ -10,18 +10,20 @@ import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Feather } from '@expo/vector-icons'
 
 const AdminCategory = () => {
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+  const [searchQuery, setSearchQuery] = useState('')
 
   const { data: categoryList, isLoading: categoryListLoading } = useQuery({
     queryKey: ['CategoryListAdmin'],
     queryFn: async () => {
-      const res = await axiosPrivate.get('/category/all?page=0&size=100')
-      return res.data.data.content
+      const resp = await axiosPrivate.get('/category/search?page=0&size=100&q=' + searchQuery)
+      return resp.data.data.content
     },
   })
 
@@ -47,6 +49,10 @@ const AdminCategory = () => {
 
   const handleEditCategory = (categoryId) => {
     navigation.navigate('UpdateCategoryScreen', { categoryId })
+  }
+
+  const handleSearch = () => {
+    client.invalidateQueries(['CategoryListAdmin'])
   }
 
   if (categoryListLoading) {
@@ -86,6 +92,16 @@ const AdminCategory = () => {
           <AntDesign name="arrowleft" size={24} color="black" />
           <Text className="text-lg font-bold">Quản lý danh mục tài liệu</Text>
         </TouchableOpacity>
+        <View className="flex-row items-center space-x-2 p-2 rounded-lg bg-white">
+          <TouchableOpacity onPress={handleSearch}>
+            <Feather name="search" size={30} color="gray" />
+          </TouchableOpacity>
+          <TextInput
+            placeholder="Nhập từ khóa tìm kiếm..."
+            onChangeText={(text) => setSearchQuery(text)}
+            onSubmitEditing={handleSearch}
+          />
+        </View>
         <View className="my-2 flex-row justify-between">
           <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
           <TouchableOpacity

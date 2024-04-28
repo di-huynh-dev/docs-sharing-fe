@@ -1,5 +1,15 @@
-import { View, Text, ActivityIndicator, SafeAreaView, ScrollView, TouchableOpacity, Image, Linking } from 'react-native'
-import React from 'react'
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Linking,
+  TextInput,
+} from 'react-native'
+import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -7,22 +17,33 @@ import { Table, Row, Rows } from 'react-native-table-component'
 import { AntDesign, FontAwesome6 } from '@expo/vector-icons'
 import { formatDate } from '../../utils/helpers'
 import Toast from 'react-native-toast-message'
+import { LineChart } from 'react-native-chart-kit'
+import { Feather } from '@expo/vector-icons'
 
 const DocumentListAdmin = () => {
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+  const [searchQuery, setSearchQuery] = useState('')
 
   const { data: documents, isLoading: documentLoading } = useQuery({
     queryKey: ['Documents'],
     queryFn: async () => {
       try {
-        const resp = await axiosPrivate.get('/document/search?page=0&size=100&order=oldest')
+        const resp = await axiosPrivate.get('/document/search?page=0&size=100&q=' + searchQuery)
         return resp.data.data.content
       } catch (error) {
         console.log(error)
         throw new Error('Failed to fetch posts')
       }
+    },
+  })
+
+  const { data: documentStats, isLoading: documentStatsLoading } = useQuery({
+    queryKey: ['DocumentStats'],
+    queryFn: async () => {
+      const res = await axiosPrivate.get('/stats/document/6month')
+      return res.data.data
     },
   })
 
@@ -45,11 +66,45 @@ const DocumentListAdmin = () => {
     },
   })
 
+  const chartDataDocument = {
+    labels: Array.from({ length: 6 }, (_, i) => {
+      const currentDate = new Date()
+      currentDate.setMonth(currentDate.getMonth() - i)
+      const month = currentDate.getMonth() + 1 // 0-11
+      const year = currentDate.getFullYear()
+      return `${month.toString().padStart(2, '0')}/${year}`
+    }).reverse(),
+    datasets: [
+      {
+        data: documentStats,
+        color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+        strokeWidth: 2,
+      },
+    ],
+  }
+
+  const chartConfig = {
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+    propsForDots: {
+      r: '6',
+      strokeWidth: '2',
+      stroke: '#ffa726',
+    },
+  }
+  const handleSearch = () => {
+    client.invalidateQueries(['Documents'])
+  }
   const handleEditDoc = (docId) => {
     navigation.navigate('EditDocumentScreen', { docId })
   }
 
-  if (documentLoading) {
+  if (documentLoading || documentStatsLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -101,7 +156,20 @@ const DocumentListAdmin = () => {
           <AntDesign name="arrowleft" size={24} color="black" />
           <Text className="text-lg font-bold">Quản lý tài liệu hệ thống</Text>
         </TouchableOpacity>
-
+        <View className="flex-row items-center space-x-2 p-2 rounded-lg bg-white">
+          <TouchableOpacity onPress={handleSearch}>
+            <Feather name="search" size={30} color="gray" />
+          </TouchableOpacity>
+          <TextInput
+            placeholder="Nhập từ khóa tìm kiếm..."
+            onChangeText={(text) => setSearchQuery(text)}
+            onSubmitEditing={handleSearch}
+          />
+        </View>
+        <Text className="font-bold text-center my-2">Biểu đồ thống kê tài liệu được đăng 6 tháng gần đây</Text>
+        {documentStats && (
+          <LineChart data={chartDataDocument} width={380} height={220} chartConfig={chartConfig} bezier />
+        )}
         <View className="my-2 flex-row justify-between">
           <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
         </View>
