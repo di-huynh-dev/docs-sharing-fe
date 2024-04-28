@@ -1,6 +1,6 @@
 import axios from 'axios'
 import queryString from 'query-string'
-const BASE_URL = 'http://192.168.1.3:8080/docs-sharing/api/v1'
+const BASE_URL = 'http://192.168.1.34:8080/docs-sharing/api/v1'
 
 const axiosClient = axios.create({
   baseURL: BASE_URL,

@@ -56,7 +56,7 @@ const PostSearch = () => {
             <Feather name="search" size={30} color="gray" />
           </TouchableOpacity>
           <TextInput
-            placeholder="| Tìm kiếm.."
+            placeholder="Tìm kiếm.."
             className="text-lg "
             onChangeText={(text) => setSearchQuery(text)}
             onSubmitEditing={handleSearch}

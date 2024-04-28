@@ -8,32 +8,31 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons'
 import { Table, Row, Rows } from 'react-native-table-component'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
-import Spinner from 'react-native-loading-spinner-overlay'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import { formatDate } from '../../utils/helpers'
 import tagServices from '../../apis/tagServices'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Feather } from '@expo/vector-icons'
 
 const AdminTag = () => {
-  // const [tagList, setTagList] = React.useState([])
-  const [isLoading, setIsLoading] = React.useState(false)
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+  const [searchQuery, setSearchQuery] = useState('')
 
   const { data: tagList, isLoading: tagListLoading } = useQuery({
     queryKey: ['TagListAdmin'],
     queryFn: async () => {
-      const res = await axiosPrivate.get('/tag/all?page=0&size=100')
-      return res.data.data.content
+      const resp = await axiosPrivate.get('/tag/search?page=0&size=100&q=' + searchQuery)
+      return resp.data.data.content
     },
   })
 
@@ -57,9 +56,14 @@ const AdminTag = () => {
     }
   }
 
+  const handleSearch = () => {
+    client.invalidateQueries(['TagListAdmin'])
+  }
+
   const handleEditTag = (tagId) => {
     navigation.navigate('UpdateTagScreen', { tagId })
   }
+
   if (tagListLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -67,6 +71,7 @@ const AdminTag = () => {
       </View>
     )
   }
+
   const data = tagList.map((tag) => [
     tag.tagId.toString(),
     tag.name,
@@ -96,10 +101,20 @@ const AdminTag = () => {
           onPress={() => navigation.navigate('AdminHomeScreen')}
         >
           <AntDesign name="arrowleft" size={24} color="black" />
-          <Text className="text-lg font-bold">Quản lý danh mục tài liệu</Text>
+          <Text className="text-lg font-bold">Quản lý thẻ</Text>
         </TouchableOpacity>
-        <View className="my-2 flex-row justify-between">
-          <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
+
+        <View className="flex-row justify-between">
+          <View className="flex-row items-center space-x-2 p-2 rounded-lg bg-white w-4/5">
+            <TouchableOpacity onPress={handleSearch}>
+              <Feather name="search" size={30} color="gray" />
+            </TouchableOpacity>
+            <TextInput
+              placeholder="Nhập từ khóa tìm kiếm..."
+              onChangeText={(text) => setSearchQuery(text)}
+              onSubmitEditing={handleSearch}
+            />
+          </View>
           <TouchableOpacity
             className="bg-[#ffffff] rounded-xl h-14 w-14 justify-center"
             onPress={() => navigation.navigate('AddTagScreen')}
@@ -108,6 +123,9 @@ const AdminTag = () => {
               <AntDesign name="plus" size={24} color="gray" />
             </View>
           </TouchableOpacity>
+        </View>
+        <View className="my-2 flex-row justify-between">
+          <Text className="text-sm font-bold my-2">Tổng cộng: {data.length} kết quả</Text>
         </View>
         <ScrollView horizontal={true} className="bg-white">
           <View>
@@ -126,7 +144,6 @@ const AdminTag = () => {
           </View>
         </ScrollView>
       </ScrollView>
-      <Spinner visible={isLoading} />
     </SafeAreaView>
   )
 }
