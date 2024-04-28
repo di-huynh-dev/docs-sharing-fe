@@ -1,7 +1,7 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
+import React, { useState } from 'react'
 import Entypo from 'react-native-vector-icons/Entypo'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { formatDate } from '../utils/helpers'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
@@ -12,6 +12,11 @@ const PostVerticalItem = ({ postId, title, content, createdAt, totalComments, us
   const navigation = useNavigation()
   const axiosPrivate = useAxiosPrivate()
   const client = useQueryClient()
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible)
+  }
 
   const { data: postDetail, isLoading } = useQuery({
     queryKey: ['PostDetail', postId],
@@ -60,9 +65,46 @@ const PostVerticalItem = ({ postId, title, content, createdAt, totalComments, us
         </TouchableOpacity>
 
         <View className="flex items-center justify-center">
-          <TouchableOpacity className="bg-[#F1F4F5] w-[40px] h-[40px] rounded-full flex items-center justify-center">
+          <TouchableOpacity
+            onPress={toggleModal}
+            className="bg-[#F1F4F5] w-[40px] h-[40px] rounded-full flex items-center justify-center"
+          >
             <Entypo name="dots-three-horizontal" size={24} color="#99A1BE" />
           </TouchableOpacity>
+          <Modal
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => {
+              setIsModalVisible(false)
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              }}
+              onPress={toggleModal}
+            >
+              <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '40%' }}>
+                <View className="flex-row gap-2">
+                  <TouchableOpacity onPress={() => navigation.navigate('PostDetailScreen', { postId: postId })}>
+                    <Entypo name="dots-three-horizontal" size={24} color="black" />
+                  </TouchableOpacity>
+                  <Text style={{ fontSize: 14, marginBottom: 20 }}>Xem chi tiết</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('CreateReportPostScreen', { postId: postId })}
+                  className="flex-row gap-2"
+                >
+                  <MaterialIcons name="report" size={24} color="black" />
+
+                  <Text style={{ fontSize: 14 }}>Báo cáo</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Modal>
         </View>
       </View>
       <TouchableOpacity

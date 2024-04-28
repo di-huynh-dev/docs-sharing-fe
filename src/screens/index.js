@@ -31,8 +31,12 @@ import DocumentReported from './report/DocumentReported'
 import PostReported from './report/PostReported'
 import DocumentReportDetail from './report/DocumentReportDetail'
 import PostReportDetail from './report/PostReportDetail'
+import CreateReportPost from './post/CreateReport'
+import CreateReportDoc from './document/CreateReport'
 
 export {
+  CreateReportDoc,
+  CreateReportPost,
   PostReportDetail,
   DocumentReportDetail,
   DocumentReported,

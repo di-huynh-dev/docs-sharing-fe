@@ -1,6 +1,6 @@
 import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
 import React, { useState } from 'react'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { authSelector } from '../redux/reducers/userSlice'
 import { useSelector } from 'react-redux'
@@ -39,6 +39,11 @@ const VerticalItem = ({
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
   const [isShowModal, setIsShowModal] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible)
+  }
 
   const handleDelete = async () => {
     try {
@@ -95,13 +100,46 @@ const VerticalItem = ({
                 <AntDesign name="eye" size={16} color="pink" />
                 <Text className="">{totalView}</Text>
               </View>
-              {/* <TouchableOpacity
-              className="flex-row gap-2 justify-start "
-              onPress={() => navigation.navigate('EditDocumentScreen', { docId })}
-            >
-              <AntDesign name="edit" size={16} color="blue" />
-            </TouchableOpacity>
-            <TouchableOpacity className="flex-row gap-2 justify-start " onPress={() => setIsShowModal(true)}>
+              <TouchableOpacity className="flex-row gap-2 justify-start " onPress={toggleModal}>
+                <Entypo name="dots-three-horizontal" size={16} color="black" />
+              </TouchableOpacity>
+              <Modal
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => {
+                  setIsModalVisible(false)
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                  }}
+                  onPress={toggleModal}
+                >
+                  <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '40%' }}>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}
+                      className="flex-row gap-2"
+                    >
+                      <Entypo name="dots-three-horizontal" size={24} color="black" />
+
+                      <Text style={{ fontSize: 14, marginBottom: 20 }}>Xem chi tiết</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('CreateReportDocScreen', { docId: docId })}
+                      className="flex-row gap-2"
+                    >
+                      <MaterialIcons name="report" size={24} color="black" />
+
+                      <Text style={{ fontSize: 14 }}>Báo cáo</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              </Modal>
+              {/* <TouchableOpacity className="flex-row gap-2 justify-start " onPress={() => setIsShowModal(true)}>
               <AntDesign name="delete" size={16} color="blue" />
             </TouchableOpacity> */}
             </View>
