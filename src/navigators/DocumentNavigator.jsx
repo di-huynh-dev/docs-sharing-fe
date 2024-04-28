@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import DocumentScreen from '../screens/document/DocumentScreen'
 import DocumentDetail from '../screens/document/DocumentDetailScreen'
 import AddDocument from '../screens/AddDocument'
-import { EditDocumentScreen } from '../screens'
+import { CreateReportDoc, EditDocumentScreen } from '../screens'
 import DocumentSearch from '../screens/document/DocumentSearch'
 
 const DocumentNavigator = () => {
@@ -19,6 +19,7 @@ const DocumentNavigator = () => {
       <Stack.Screen name="AddDocumentScreen" component={AddDocument} />
       <Stack.Screen name="EditDocumentScreen" component={EditDocumentScreen} />
       <Stack.Screen name="DocumentSearchScreen" component={DocumentSearch} />
+      <Stack.Screen name="CreateReportDocScreen" component={CreateReportDoc} />
     </Stack.Navigator>
   )
 }

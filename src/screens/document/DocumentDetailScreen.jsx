@@ -36,7 +36,7 @@ const DocumentDetailScreen = ({ route }) => {
   return (
     <SafeAreaView className="flex-1 m-2">
       <View className="flex-row gap-2 items-center">
-        <TouchableOpacity onPress={() => navigation.navigate('PostListScreen')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
         <Text className="text-xl font-bold leading-snug">Chi tiết tài liệu</Text>

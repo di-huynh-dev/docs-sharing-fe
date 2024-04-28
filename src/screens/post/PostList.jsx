@@ -28,9 +28,8 @@ const PostList = () => {
   const [postsData, setPostsData] = useState([])
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
 
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts } = useQuery({
     queryKey: ['Posts', page],
     queryFn: async () => {
       try {
@@ -50,6 +49,7 @@ const PostList = () => {
       setPostsData((prevPostsData) => [...prevPostsData, ...posts.data.data.content])
     }
   }, [posts])
+
   const onRefresh = () => {
     setRefreshing(true)
     client.invalidateQueries(['Posts'])
@@ -57,14 +57,6 @@ const PostList = () => {
     setPage(0)
     setPostsData([])
     setHasMore(true)
-  }
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="blue" />
-      </View>
-    )
   }
 
   return (
@@ -123,15 +115,6 @@ const PostList = () => {
           }
         }}
         onEndReachedThreshold={0.2}
-        ListFooterComponent={
-          isLoading && (
-            <TouchableOpacity style={styles.floatingButton}>
-              <Text className="text-[#5D56F3] m-5">
-                <AntDesign name="upcircleo" size={24} color="black" />
-              </Text>
-            </TouchableOpacity>
-          )
-        }
       />
     </View>
   )
