@@ -141,9 +141,6 @@ const DocumentListAdmin = () => {
       <TouchableOpacity onPress={() => deleteDocMutation.mutate(doc.docId)}>
         <AntDesign name="delete" size={20} color="blue" style={{ marginRight: 10 }} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleEditDoc(doc.docId)}>
-        <FontAwesome6 name="ban" size={20} color="red" />
-      </TouchableOpacity>
     </View>,
   ])
   return (

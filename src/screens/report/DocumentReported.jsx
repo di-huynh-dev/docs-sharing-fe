@@ -37,7 +37,7 @@ const DocumentReported = () => {
     <Text>
       {report.user.firstName} {report.user.lastName}
     </Text>,
-    report.read ? <Text>Đã xem</Text> : <Text className="text-red-500">Chưa xem</Text>,
+    report.read ? <Text className="text-green-500">Đã xem</Text> : <Text className="text-red-500">Chưa xem</Text>,
     <View className="flex-row gap-2 justify-around my-1">
       <TouchableOpacity onPress={() => navigation.navigate('AdminDocumentReportDetail', { reportId: report.reportId })}>
         <Entypo name="dots-three-horizontal" size={24} color="black" />
