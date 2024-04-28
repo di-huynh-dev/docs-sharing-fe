@@ -88,12 +88,13 @@ const PostVerticalItem = ({ postId, title, content, createdAt, totalComments, us
               onPress={toggleModal}
             >
               <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '40%' }}>
-                <View className="flex-row gap-2">
-                  <TouchableOpacity onPress={() => navigation.navigate('PostDetailScreen', { postId: postId })}>
-                    <Entypo name="dots-three-horizontal" size={24} color="black" />
-                  </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('PostDetailScreen', { postId: postId })}
+                  className="flex-row gap-2"
+                >
+                  <Entypo name="dots-three-horizontal" size={24} color="black" />
                   <Text style={{ fontSize: 14, marginBottom: 20 }}>Xem chi tiết</Text>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('CreateReportPostScreen', { postId: postId })}
                   className="flex-row gap-2"

@@ -9,15 +9,17 @@ import { formatDate } from '../../utils/helpers'
 import Toast from 'react-native-toast-message'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-import { EvilIcons } from '@expo/vector-icons'
+import { EvilIcons, Entypo } from '@expo/vector-icons'
 import CommentRender from '../../components/CommentRender'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { set } from 'react-hook-form'
 
 const PostDetail = ({ route }) => {
   const { postId } = route.params
 
   const axiosPrivate = useAxiosPrivate()
   const auth = useSelector(authSelector)
+
   const client = useQueryClient()
   const [selectedCommentId, setSelectedCommentId] = useState(null)
   const [content, setContent] = useState('')
@@ -25,6 +27,8 @@ const PostDetail = ({ route }) => {
   const [isModalReplyVisible, setIsModalReplyVisible] = useState(false)
   const [modalActionsVisible, setModalActionsVisible] = useState(false)
   const [modalUpdateVisible, setModalUpdateVisible] = useState(false)
+  const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false)
+  const [modalCommentOptions, setModalCommentOptions] = useState(false)
 
   const navigation = useNavigation()
 
@@ -40,6 +44,35 @@ const PostDetail = ({ route }) => {
     },
   })
 
+  const deletePostMutation = useMutation({
+    mutationFn: async () => {
+      const resp = await axiosPrivate.delete('/post/' + postId)
+      return resp
+    },
+    onSuccess: (resp) => {
+      Toast.show({
+        type: 'success',
+        text1: resp.data.message,
+      })
+      setIsMoreOptionsVisible(false)
+    },
+  })
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async () => {
+      const resp = await axiosPrivate.delete('/comment/' + selectedCommentId)
+      return resp
+    },
+    onSuccess: (resp) => {
+      Toast.show({
+        type: 'success',
+        text1: resp.data.message,
+      })
+      client.invalidateQueries(['PostComments', postId])
+      setModalCommentOptions(false)
+    },
+  })
+
   const { data: comments, isLoading: isLoadingComments } = useQuery({
     queryKey: ['PostComments', postId],
     queryFn: async () => {
@@ -51,6 +84,7 @@ const PostDetail = ({ route }) => {
       }
     },
   })
+
   const likePostMutation = useMutation({
     mutationFn: async () => {
       const resp = await axiosPrivate.post('/post/' + postId + '/like')
@@ -74,8 +108,9 @@ const PostDetail = ({ route }) => {
     setIsModalReplyVisible(!isModalReplyVisible)
   }
 
-  const handleViewAllReplies = (commentId) => {
+  const toggleModalCommentOptions = (commentId) => {
     setSelectedCommentId(commentId)
+    setModalCommentOptions(!modalCommentOptions)
   }
 
   const handleCreateComment = async () => {
@@ -132,19 +167,6 @@ const PostDetail = ({ route }) => {
     } catch (error) {}
   }
 
-  const handleDeleteComment = async (commentId) => {
-    try {
-      const resp = await commentServices.deleteComment(auth.accessToken, commentId)
-      if (resp.status === 200) {
-        Toast.show({
-          type: 'success',
-          text1: resp.message,
-        })
-        fetchData()
-      }
-    } catch (error) {}
-  }
-
   const handleEditComment = async () => {
     try {
       const resp = await commentServices.editComment(auth.accessToken, selectedCommentId, content, postId)
@@ -153,7 +175,7 @@ const PostDetail = ({ route }) => {
           type: 'success',
           text1: resp.message,
         })
-
+        client.invalidateQueries(['PostComments', postId])
         setContent('')
         setModalUpdateVisible(false)
       } else {
@@ -185,24 +207,63 @@ const PostDetail = ({ route }) => {
           Bài viết của {postDetail?.user.lastName} {postDetail?.user.firstName}
         </Text>
       </View>
+
       {/* Post detail */}
       <View className="bg-gray-100 p-2 rounded-lg">
-        <TouchableOpacity
-          onPress={() => navigation.navigate('OtherUserProfileScreen', { user: postDetail.user })}
-          className="flex-row items-center space-x-3"
-        >
-          {postDetail && postDetail?.user.image ? (
-            <Image source={{ uri: postDetail?.user.image }} style={{ width: 40, height: 40, borderRadius: 50 }} />
-          ) : (
-            <Image source={require('../../../assets/images/no-avatar.jpg')} className="w-10 h-10 rounded-full" />
+        <View className="flex-row justify-between">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('OtherUserProfileScreen', { user: postDetail.user })}
+            className="flex-row items-center space-x-3"
+          >
+            {postDetail && postDetail?.user.image ? (
+              <Image source={{ uri: postDetail?.user.image }} style={{ width: 40, height: 40, borderRadius: 50 }} />
+            ) : (
+              <Image source={require('../../../assets/images/no-avatar.jpg')} className="w-10 h-10 rounded-full" />
+            )}
+            <View className="">
+              <Text className="text-base font-bold">
+                {postDetail?.user.lastName} {postDetail?.user.firstName}
+              </Text>
+              <Text className="text-sm text-gray-500">{formatDate(postDetail?.createdAt)}</Text>
+            </View>
+          </TouchableOpacity>
+
+          {auth.profile.email === postDetail.user.email && (
+            <TouchableOpacity onPress={() => setIsMoreOptionsVisible(true)} className="flex-row gap-2">
+              <Entypo name="dots-three-horizontal" size={24} color="black" />
+            </TouchableOpacity>
           )}
-          <View className="">
-            <Text className="text-base font-bold">
-              {postDetail?.user.lastName} {postDetail?.user.firstName}
-            </Text>
-            <Text className="text-sm text-gray-500">{formatDate(postDetail?.createdAt)}</Text>
-          </View>
-        </TouchableOpacity>
+
+          <Modal
+            transparent={true}
+            visible={isMoreOptionsVisible}
+            onRequestClose={() => {
+              setIsMoreOptionsVisible(false)
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              }}
+              onPress={toggleModal}
+            >
+              <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '40%' }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    deletePostMutation.mutate()
+                  }}
+                  className="flex-row gap-2"
+                >
+                  <AntDesign name="delete" size={24} color="black" />
+                  <Text style={{ fontSize: 14 }}>Xóa bài viết</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Modal>
+        </View>
         <View className="my-3  rounded-xl p-2 ">
           <View>
             <Text className="text-base font-bold mb-3">{postDetail?.title}</Text>
@@ -229,19 +290,68 @@ const PostDetail = ({ route }) => {
           </View>
         </View>
       </View>
+
+      {/*Modal more option Comments */}
+      <Modal
+        transparent={true}
+        visible={modalCommentOptions}
+        onRequestClose={() => {
+          setModalCommentOptions(false)
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          }}
+          onPress={toggleModal}
+        >
+          <View className="bg-white p-4 border border-gray-300 rounded-lg w-[40%]">
+            <TouchableOpacity
+              onPress={() => {
+                setModalUpdateVisible(true)
+              }}
+              className="flex-row gap-2"
+            >
+              <AntDesign name="edit" size={24} color="black" />
+              <Text style={{ fontSize: 14 }}>Chỉnh sửa </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                deleteCommentMutation.mutate()
+              }}
+              className="flex-row gap-2"
+            >
+              <AntDesign name="delete" size={24} color="black" />
+              <Text style={{ fontSize: 14 }}>Xóa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setModalCommentOptions(false)
+              }}
+              className="flex-row gap-2 "
+            >
+              <AntDesign name="close" size={24} color="black" />
+              <Text style={{ fontSize: 14 }}>Hủy </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
       {/* Action */}
       <View className="flex-row items-center space-x-2 my-2  border border-gray-200 p-2 rounded-xl">
         <TouchableOpacity onPress={() => likePostMutation.mutate()} className="flex-row items-center">
           {postDetail?.liked === true ? (
-            <>
+            <View>
               <EvilIcons name="like" size={32} color="blue" />
               <Text className="text-blue-500 font-bold">Đã thích</Text>
-            </>
+            </View>
           ) : (
-            <>
+            <View className="flex-row items-center">
               <EvilIcons name="like" size={28} color="black" />
               <Text>Thích</Text>
-            </>
+            </View>
           )}
         </TouchableOpacity>
         <View className="flex-row items-center">
@@ -249,6 +359,7 @@ const PostDetail = ({ route }) => {
           <Text>Bình luận</Text>
         </View>
       </View>
+
       {/* Update comment */}
       <Modal
         transparent={true}
@@ -286,6 +397,7 @@ const PostDetail = ({ route }) => {
           </View>
         </View>
       </Modal>
+
       {/* rep comment */}
       <Modal
         transparent={true}
@@ -320,6 +432,7 @@ const PostDetail = ({ route }) => {
           </View>
         </View>
       </Modal>
+
       <View className="border-b border-gray-300 my-2"></View>
       <View className="flex-row justify-between items-center gap-2">
         {auth.profile.image ? (
@@ -348,13 +461,13 @@ const PostDetail = ({ route }) => {
               <View key={comment.commentId}>
                 {CommentRender(
                   comment,
+                  toggleModalCommentOptions,
                   handleLikeComment,
                   handleReplyComment,
                   toggleModalReply,
                   setModalActionsVisible,
                   setSelectedCommentId,
                   auth,
-                  modalActionsVisible,
                 )}
               </View>
             ))}

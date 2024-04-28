@@ -5,13 +5,13 @@ import { formatDate } from '../utils/helpers'
 
 const CommentRender = (
   comment,
+  toggleModalCommentOptions,
   handleLikeComment,
   handleReplyComment,
   toggleModalReply,
   setModalActionsVisible,
   setSelectedCommentId,
   auth,
-  modalActionsVisible,
 ) => {
   return (
     <View key={comment.commentId} style={{ marginTop: 10 }}>
@@ -30,7 +30,7 @@ const CommentRender = (
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
               {comment.user.firstName} {comment.user.lastName}
-              {comment.user.userId === auth.profile.userId ? ' (Bạn)' : ''}
+              {/* {comment.user.email === auth.profile.email ? ' (Bạn)' : ''} */}
             </Text>
             <Text style={{ fontSize: 12, color: 'gray' }}>{formatDate(comment.createdAt)}</Text>
           </View>
@@ -42,8 +42,8 @@ const CommentRender = (
             <TouchableOpacity onPress={() => toggleModalReply(comment.commentId)}>
               <Entypo name="reply" size={18} color="blue" />
             </TouchableOpacity>
-            {comment.user.userId === auth.profile.userId && (
-              <TouchableOpacity onPress={() => setModalActionsVisible(comment.commentId)}>
+            {comment.user.email === auth?.profile.email && (
+              <TouchableOpacity onPress={() => toggleModalCommentOptions(comment.commentId)}>
                 <Feather name="more-vertical" size={18} color="black" />
               </TouchableOpacity>
             )}
@@ -55,14 +55,14 @@ const CommentRender = (
           {comment.childComments.map((childComment) => (
             <View key={childComment.commentId} style={{ marginTop: 10 }}>
               {CommentRender(
-                childComment,
+                comment,
+                toggleModalCommentOptions,
                 handleLikeComment,
                 handleReplyComment,
                 toggleModalReply,
                 setModalActionsVisible,
                 setSelectedCommentId,
                 auth,
-                modalActionsVisible,
               )}
             </View>
           ))}
