@@ -213,6 +213,7 @@ const Profile = () => {
 
               <View className="mx-4 my-2">
                 <Text className="text-sm font-bold">Tags đã chia sẻ</Text>
+                {posts.length === 0 && <Text className="text-center">Chưa có tag nào được chia sẻ</Text>}
                 <View className="flex-wrap flex-row gap-2">
                   {posts.map((post) => (
                     <View key={post.postId} className="flex-row flex-wrap">
@@ -241,6 +242,7 @@ const Profile = () => {
                   <AntDesign name="book" size={24} color="black" />
                   <Text className="text-sm font-bold">Bài viết của tôi</Text>
                 </View>
+                {posts.length === 0 && <Text className="text-center">Chưa có bài viết nào</Text>}
                 {posts.map((item) => {
                   return (
                     <TouchableOpacity
@@ -260,6 +262,7 @@ const Profile = () => {
                   <Entypo name="text-document" size={24} color="black" />
                   <Text className="text-sm font-bold">Tài liệu của tôi</Text>
                 </View>
+                {docList.length === 0 && <Text className="text-center">Chưa có tài liệu nào</Text>}
                 {docList.map((item) => (
                   <VerticalItem {...item} />
                 ))}
@@ -271,6 +274,8 @@ const Profile = () => {
             <View className="mx-4">
               <ScrollView>
                 <Text className="text-sm font-bold">Bài viết yêu thích</Text>
+                {likedPostList.length === 0 && <Text className="text-center">Chưa có bài viết nào được yêu thích</Text>}
+
                 {likedPostList.map((item) => {
                   return (
                     <TouchableOpacity
@@ -286,6 +291,7 @@ const Profile = () => {
                   )
                 })}
                 <Text className="text-sm font-bold">Tài liệu yêu thích</Text>
+                {likedDocList.length === 0 && <Text className="text-center">Chưa có tài liệu nào được yêu thích</Text>}
                 {likedDocList.map((item) => {
                   return (
                     <TouchableOpacity
