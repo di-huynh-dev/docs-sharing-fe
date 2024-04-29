@@ -264,7 +264,7 @@ const Profile = () => {
                 </View>
                 {docList.length === 0 && <Text className="text-center">Chưa có tài liệu nào</Text>}
                 {docList.map((item) => (
-                  <VerticalItem {...item} />
+                  <VerticalItem {...item} key={item.docId} />
                 ))}
               </ScrollView>
             </SafeAreaView>

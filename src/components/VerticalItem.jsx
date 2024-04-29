@@ -82,7 +82,7 @@ const VerticalItem = ({
     } catch (error) {}
   }
   return (
-    <TouchableOpacity key={docId} onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}>
+    <TouchableOpacity onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}>
       <View className="mx-2 rounded-lg my-4 border-b-[0.2px] w-full shadow-xl ">
         {isShowModal && (
           <Modal transparent={true} visible={true} animationType="slide">
@@ -156,11 +156,24 @@ const VerticalItem = ({
                       <Text style={{ fontSize: 14, marginBottom: 20 }}>Báo cáo</Text>
                     </TouchableOpacity>
                     {user.email === auth.profile.email && (
-                      <TouchableOpacity onPress={() => deletePostMutation.mutate()} className="flex-row gap-2">
-                        <MaterialIcons name="delete" size={24} color="black" />
+                      <Text>
+                        <TouchableOpacity onPress={() => deletePostMutation.mutate()} className="flex-row gap-2">
+                          <MaterialIcons name="delete" size={24} color="black" />
 
-                        <Text style={{ fontSize: 14 }}>Xóa</Text>
-                      </TouchableOpacity>
+                          <Text style={{ fontSize: 14, marginBottom: 20 }}>Xóa</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.navigate('EditDocumentScreen', { docId: docId })
+                            setIsModalVisible(false)
+                          }}
+                          className="flex-row gap-2"
+                        >
+                          <MaterialIcons name="edit" size={24} color="black" />
+
+                          <Text style={{ fontSize: 14 }}>Chỉnh sửa</Text>
+                        </TouchableOpacity>
+                      </Text>
                     )}
                   </View>
                 </TouchableOpacity>
