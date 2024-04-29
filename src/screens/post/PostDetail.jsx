@@ -228,11 +228,11 @@ const PostDetail = ({ route }) => {
             </View>
           </TouchableOpacity>
 
-          {auth.profile.email === postDetail.user.email && (
+          {/* {auth.profile.email === postDetail.user.email && (
             <TouchableOpacity onPress={() => setIsMoreOptionsVisible(true)} className="flex-row gap-2">
               <Entypo name="dots-three-horizontal" size={24} color="black" />
             </TouchableOpacity>
-          )}
+          )} */}
 
           <Modal
             transparent={true}
@@ -313,7 +313,7 @@ const PostDetail = ({ route }) => {
               onPress={() => {
                 setModalUpdateVisible(true)
               }}
-              className="flex-row gap-2"
+              className="flex-row gap-2 items-center  my-1"
             >
               <AntDesign name="edit" size={24} color="black" />
               <Text style={{ fontSize: 14 }}>Chỉnh sửa </Text>
@@ -322,7 +322,7 @@ const PostDetail = ({ route }) => {
               onPress={() => {
                 deleteCommentMutation.mutate()
               }}
-              className="flex-row gap-2"
+              className="flex-row gap-2 items-center  my-1"
             >
               <AntDesign name="delete" size={24} color="black" />
               <Text style={{ fontSize: 14 }}>Xóa</Text>
@@ -331,7 +331,7 @@ const PostDetail = ({ route }) => {
               onPress={() => {
                 setModalCommentOptions(false)
               }}
-              className="flex-row gap-2 "
+              className="flex-row gap-2 items-center my-1"
             >
               <AntDesign name="close" size={24} color="black" />
               <Text style={{ fontSize: 14 }}>Hủy </Text>
@@ -453,25 +453,22 @@ const PostDetail = ({ route }) => {
       </View>
 
       <ScrollView>
-        {comments === null ? (
-          <Text>Không có bình luận nào</Text>
+        {comments?.length > 0 ? (
+          comments.map((comment) => (
+            <CommentRender
+              key={comment.commentId}
+              comment={comment}
+              toggleModalCommentOptions={toggleModalCommentOptions}
+              handleLikeComment={handleLikeComment}
+              handleReplyComment={handleReplyComment}
+              toggleModalReply={toggleModalReply}
+              setModalActionsVisible={setModalActionsVisible}
+              setSelectedCommentId={setSelectedCommentId}
+              auth={auth}
+            />
+          ))
         ) : (
-          <>
-            {comments.map((comment) => (
-              <View key={comment.commentId}>
-                {CommentRender(
-                  comment,
-                  toggleModalCommentOptions,
-                  handleLikeComment,
-                  handleReplyComment,
-                  toggleModalReply,
-                  setModalActionsVisible,
-                  setSelectedCommentId,
-                  auth,
-                )}
-              </View>
-            ))}
-          </>
+          <Text className="text-center">Chưa có bình luận nào</Text>
         )}
       </ScrollView>
     </View>

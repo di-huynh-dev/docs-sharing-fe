@@ -1,9 +1,9 @@
 import React from 'react'
-import { View, Text, Image, ScrollView, TouchableOpacity, Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { AntDesign, Entypo, Feather } from '@expo/vector-icons'
 import { formatDate } from '../utils/helpers'
 
-const CommentRender = (
+const CommentRender = ({
   comment,
   toggleModalCommentOptions,
   handleLikeComment,
@@ -12,7 +12,7 @@ const CommentRender = (
   setModalActionsVisible,
   setSelectedCommentId,
   auth,
-) => {
+}) => {
   return (
     <View key={comment.commentId} style={{ marginTop: 10 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
@@ -42,7 +42,7 @@ const CommentRender = (
             <TouchableOpacity onPress={() => toggleModalReply(comment.commentId)}>
               <Entypo name="reply" size={18} color="blue" />
             </TouchableOpacity>
-            {comment.user.email === auth?.profile.email && (
+            {comment.user.email === auth.profile.email && (
               <TouchableOpacity onPress={() => toggleModalCommentOptions(comment.commentId)}>
                 <Feather name="more-vertical" size={18} color="black" />
               </TouchableOpacity>
@@ -52,19 +52,19 @@ const CommentRender = (
       </View>
       {comment.childComments.length > 0 && (
         <View style={{ marginLeft: 20 }}>
+          {/* Render child comments */}
           {comment.childComments.map((childComment) => (
-            <View key={childComment.commentId} style={{ marginTop: 10 }}>
-              {CommentRender(
-                comment,
-                toggleModalCommentOptions,
-                handleLikeComment,
-                handleReplyComment,
-                toggleModalReply,
-                setModalActionsVisible,
-                setSelectedCommentId,
-                auth,
-              )}
-            </View>
+            <CommentRender
+              key={childComment.commentId} // Don't forget to add a unique key
+              comment={childComment}
+              toggleModalCommentOptions={toggleModalCommentOptions}
+              handleLikeComment={handleLikeComment}
+              handleReplyComment={handleReplyComment}
+              toggleModalReply={toggleModalReply}
+              setModalActionsVisible={setModalActionsVisible}
+              setSelectedCommentId={setSelectedCommentId}
+              auth={auth}
+            />
           ))}
         </View>
       )}
