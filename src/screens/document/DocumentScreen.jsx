@@ -25,7 +25,7 @@ const DocumentScreen = () => {
     queryKey: ['Documents'],
     queryFn: async () => {
       try {
-        const resp = await axiosPrivate.get('/document/search?page=0&size=100&order=oldest')
+        const resp = await axiosPrivate.get('/document/search?page=0&size=100&order=newest')
         return resp.data.data.content
       } catch (error) {
         console.log(error)

@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux'
 import documentServices from '../apis/documentServives'
 import Toast from 'react-native-toast-message'
 import { formatDate } from '../utils/helpers'
+import useAxiosPrivate from '../hooks/useAxiosPrivate'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const VerticalItem = ({
   docId,
@@ -38,8 +40,25 @@ const VerticalItem = ({
   }
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
+  const axiosPrivate = useAxiosPrivate()
   const [isShowModal, setIsShowModal] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const client = useQueryClient()
+
+  const deletePostMutation = useMutation({
+    mutationFn: async () => {
+      const resp = await axiosPrivate.delete('/document/' + docId)
+      return resp
+    },
+    onSuccess: (resp) => {
+      Toast.show({
+        type: 'success',
+        text1: resp.data.message,
+      })
+      client.invalidateQueries(['DocListMine'])
+      setIsModalVisible(false)
+    },
+  })
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible)
@@ -63,7 +82,7 @@ const VerticalItem = ({
     } catch (error) {}
   }
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}>
+    <TouchableOpacity key={docId} onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}>
       <View className="mx-2 rounded-lg my-4 border-b-[0.2px] w-full shadow-xl ">
         {isShowModal && (
           <Modal transparent={true} visible={true} animationType="slide">
@@ -134,8 +153,15 @@ const VerticalItem = ({
                     >
                       <MaterialIcons name="report" size={24} color="black" />
 
-                      <Text style={{ fontSize: 14 }}>Báo cáo</Text>
+                      <Text style={{ fontSize: 14, marginBottom: 20 }}>Báo cáo</Text>
                     </TouchableOpacity>
+                    {user.email === auth.profile.email && (
+                      <TouchableOpacity onPress={() => deletePostMutation.mutate()} className="flex-row gap-2">
+                        <MaterialIcons name="delete" size={24} color="black" />
+
+                        <Text style={{ fontSize: 14 }}>Xóa</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </TouchableOpacity>
               </Modal>
