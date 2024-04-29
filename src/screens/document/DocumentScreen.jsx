@@ -12,10 +12,10 @@ import { Octicons } from '@expo/vector-icons'
 import { Ionicons } from '@expo/vector-icons'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-import { AntDesign } from '@expo/vector-icons'
 
 const DocumentScreen = () => {
   const auth = useSelector(authSelector)
+  console.log(auth)
   const navigation = useNavigation()
   const client = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
