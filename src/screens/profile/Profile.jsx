@@ -12,25 +12,28 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Entypo } from '@expo/vector-icons'
 import AddDocumentModal from '../../components/AddDocumentModal'
-import VerticalItem from '../../components/VerticalItem'
 
 const Profile = () => {
   const navigation = useNavigation()
   const user = useSelector(authSelector)
   const axiosPrivate = useAxiosPrivate()
   const [isProfileActive, setIsProfileActive] = useState(true)
-  const [isPhotoActive, setIsPhotoActive] = useState(false)
-  const [isLikeddActive, setIsLikeddActive] = useState(false)
   const [showAddPostModal, setShowAddPostModal] = useState(false)
   const client = useQueryClient()
 
-  const { data: likedPostList, isLoading: likedPostListLoading } = useQuery({
-    queryKey: ['LikedPostList'],
+  const { data: posts, isLoading: postsLoading } = useQuery({
+    queryKey: ['PostsMine'],
     queryFn: async () => {
-      const resp = await axiosPrivate.get('/post/liked?page=0&size=100')
-      return resp.data.data.content
+      try {
+        const resp = await axiosPrivate.get('/post/mine?page=0&size=100')
+        return resp.data.data.content
+      } catch (error) {
+        console.log(error)
+        throw new Error('Failed to fetch posts')
+      }
     },
   })
+
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['Profile'],
     queryFn: async () => {
@@ -39,31 +42,7 @@ const Profile = () => {
     },
   })
 
-  const { data: posts, isLoading: postLoading } = useQuery({
-    queryKey: ['PostList'],
-    queryFn: async () => {
-      const resp = await axiosPrivate.get('/post/mine?page=0&size=10')
-      return resp.data.data.content
-    },
-  })
-
-  const { data: docList, isLoading: docListLoading } = useQuery({
-    queryKey: ['DocListMine'],
-    queryFn: async () => {
-      const resp = await axiosPrivate.get('/document/user/documents?page=0&size=100')
-      return resp.data.data.content
-    },
-  })
-
-  const { data: likedDocList, isLoading: likedDocsLoading } = useQuery({
-    queryKey: ['LikedDocs'],
-    queryFn: async () => {
-      const resp = await axiosPrivate.get('/document/user/likes?page=0&size=10')
-      return resp.data.data.content
-    },
-  })
-
-  if (profileLoading || postLoading || likedDocsLoading || likedPostListLoading || docListLoading)
+  if (profileLoading || postsLoading)
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="blue" />
@@ -81,11 +60,13 @@ const Profile = () => {
       )}
 
       <ScrollView className="my-2">
-        <View className="flex-row gap-2 items-center">
+        <View className="mx-2 flex-row items-center p-2">
           <TouchableOpacity onPress={() => navigation.navigate('Main')}>
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold leading-snug">Trang cá nhân</Text>
+          <View className="flex-1">
+            <Text className="text-xl font-bold leading-snug text-center">Trang cá nhân</Text>
+          </View>
         </View>
 
         <View className="flex items-center justify-center rounded-full">
@@ -103,13 +84,13 @@ const Profile = () => {
         </View>
 
         <View>
-          <Text className="text-xl font-bold text-center">
+          <Text className="text-xl font-bold text-center mb-4">
             {user.profile.lastName} {user.profile.firstName}
           </Text>
 
-          <View className="w-2/3 m-auto mt-2">
+          <View className="flex-row gap-2 items-center justify-center">
             <TouchableOpacity
-              className="border border-[#5669ff] rounded-3xl h-12 justify-center"
+              className="border border-[#5669ff] rounded-3xl h-12 justify-center p-2"
               onPress={() => navigation.navigate('UpdateProfileScreen')}
             >
               <View className="flex-row items-center justify-center gap-2">
@@ -117,57 +98,15 @@ const Profile = () => {
                 <AntDesign name="edit" size={24} color="#5669ff" />
               </View>
             </TouchableOpacity>
-          </View>
-
-          {/* Tab */}
-          <View className="mt-2 flex-row mx-2">
-            <View className="w-1/3 m-auto mt-2">
-              <TouchableOpacity
-                className={`rounded-full bg-${isProfileActive && '[#5669ff]'}  h-12 justify-center`}
-                onPress={() => {
-                  setIsProfileActive(!isProfileActive)
-                  setIsPhotoActive(false)
-                  setIsLikeddActive(false)
-                }}
-              >
-                <View className="flex-row  items-center justify-center">
-                  <Text className={`text-center text-${isProfileActive && 'white'} font-bold items-center`}>
-                    Cá nhân
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-
-            <View className="w-1/3 m-auto mt-2">
-              <TouchableOpacity
-                className={`rounded-full bg-${isPhotoActive && '[#5669ff]'}  h-12 justify-center`}
-                onPress={() => {
-                  setIsPhotoActive(!isPhotoActive)
-                  setIsProfileActive(false)
-                  setIsLikeddActive(false)
-                }}
-              >
-                <View className="flex-row  items-center justify-center">
-                  <Text className={`text-center text-${isPhotoActive && 'white'} font-bold items-center`}>Lưu trữ</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View className="w-1/3 m-auto mt-2">
-              <TouchableOpacity
-                className={`rounded-full bg-${isLikeddActive && '[#5669ff]'}  h-12 justify-center`}
-                onPress={() => {
-                  setIsLikeddActive(!isLikeddActive)
-                  setIsProfileActive(false)
-                  setIsPhotoActive(false)
-                }}
-              >
-                <View className="flex-row  items-center justify-center ">
-                  <Text className={`text-center text-${isLikeddActive && 'white'} font-bold items-center`}>
-                    Yêu thích
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              className="border border-[#5669ff] rounded-3xl h-12 justify-center p-2"
+              onPress={() => navigation.navigate('UpdatePasswordScreen')}
+            >
+              <View className="flex-row items-center justify-center gap-2">
+                <Text className="text-center text-[#5669ff] font-bold items-center">Đổi mật khẩu</Text>
+                <AntDesign name="edit" size={24} color="#5669ff" />
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* Profile View */}
@@ -231,82 +170,6 @@ const Profile = () => {
                   ))}
                 </View>
               </View>
-            </View>
-          )}
-
-          {/* Photo view */}
-          {isPhotoActive && (
-            <SafeAreaView className="flex-1 m-2">
-              <ScrollView className="mx-2">
-                <View className="flex-row my-2 items-center">
-                  <AntDesign name="book" size={24} color="black" />
-                  <Text className="text-sm font-bold">Bài viết của tôi</Text>
-                </View>
-                {posts.length === 0 && <Text className="text-center">Chưa có bài viết nào</Text>}
-                {posts.map((item) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
-                      className="flex-row items-center space-x-3"
-                      key={item.postId}
-                    >
-                      <View className="flex-row my-2 items-center">
-                        <Text>Bạn đã chia sẻ </Text>
-                        <Text className="text-base font-bold italic">{item.title}</Text>
-                        <Text> vào ngày {formatDate(item.createdAt)}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )
-                })}
-                <View className="flex-row my-2 items-center">
-                  <Entypo name="text-document" size={24} color="black" />
-                  <Text className="text-sm font-bold">Tài liệu của tôi</Text>
-                </View>
-                {docList.length === 0 && <Text className="text-center">Chưa có tài liệu nào</Text>}
-                {docList.map((item) => (
-                  <VerticalItem {...item} key={item.docId} />
-                ))}
-              </ScrollView>
-            </SafeAreaView>
-          )}
-          {/* Liked view */}
-          {isLikeddActive && (
-            <View className="mx-4">
-              <ScrollView>
-                <Text className="text-sm font-bold">Bài viết yêu thích</Text>
-                {likedPostList.length === 0 && <Text className="text-center">Chưa có bài viết nào được yêu thích</Text>}
-
-                {likedPostList.map((item) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('PostDetailScreen', { postId: item.postId })}
-                      className="flex-row items-center space-x-3"
-                      key={item.postId}
-                    >
-                      <View className="flex-row my-2 ">
-                        <Text>Bạn đã thích bài viết của {item.user.firstName} về </Text>
-                        <Text className="font-bold">{item.title}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )
-                })}
-                <Text className="text-sm font-bold">Tài liệu yêu thích</Text>
-                {likedDocList.length === 0 && <Text className="text-center">Chưa có tài liệu nào được yêu thích</Text>}
-                {likedDocList.map((item) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('DocumentDetailScreen', { itemData: item })}
-                      className="flex-row items-center space-x-3"
-                      key={item.docId}
-                    >
-                      <View className="flex-row my-2 ">
-                        <Text>Bạn đã thích tài liệu của {item.user.firstName} về </Text>
-                        <Text className="font-bold">{item.docName}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )
-                })}
-              </ScrollView>
             </View>
           )}
         </View>

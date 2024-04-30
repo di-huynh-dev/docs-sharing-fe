@@ -28,43 +28,44 @@ const DocumentDetailScreen = ({ route }) => {
       }
     } catch (error) {}
   }
-
   const handleDownload = () => {
     const downloadLink = item.downloadUrl
     Linking.openURL(downloadLink)
   }
   return (
     <SafeAreaView className="flex-1 m-2">
-      <View className="flex-row gap-2 items-center">
+      <View className="mx-2 flex-row items-center p-2">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-xl font-bold leading-snug">Chi tiết tài liệu</Text>
+        <View className="flex-1">
+          <Text className="text-xl font-bold leading-snug text-center">Chi tiết tài liệu</Text>
+        </View>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View>
+      <ScrollView showsVerticalScrollIndicator={false} className="my-2">
+        <View className="mb-2">
           <Text className="font-bold">
             Tải lên bởi: {item.user.firstName} {item.user.lastName}
           </Text>
           <Text className="italic">Thời gian: {formatDate(item.uploadedAt)}</Text>
           <Text className="italic">Tổng lượt xem: {item.totalView}</Text>
         </View>
-        <View>
+        <View className="mb-2">
           <Text className="font-bold">Tên tài liệu</Text>
           <Text className="font-bold bg-gray-100 p-2 rounded-lg">{item.docName}</Text>
         </View>
         <Image source={{ uri: item.thumbnail }} className="w-full h-[400px] my-2" resizeMode="cover" />
-        <View>
+        <View className="mb-2">
           <Text className="font-bold">Giới thiệu về tài liệu</Text>
           <Text className=" bg-gray-100 p-2 rounded-lg">{item.docIntroduction}</Text>
         </View>
-        <View>
+        <View className="mb-2">
           <Text className="font-bold">Tệp tài liệu</Text>
           <TouchableOpacity onPress={handleDownload}>
             <Text className="text-blue-500">Download tại đây</Text>
           </TouchableOpacity>
         </View>
-        <View>
+        <View className="mb-2">
           <Text className="font-bold">Danh mục</Text>
           <Text className=" bg-gray-100 p-2 rounded-lg">{item.category.categoryName}</Text>
         </View>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { AntDesign } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
@@ -18,6 +18,7 @@ const Login = () => {
   const navigation = useNavigation()
   const dispatch = useDispatch()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = async (values) => {
     setIsLoading(true)
@@ -101,11 +102,13 @@ const Login = () => {
                 <TextInput
                   className="flex-grow h-12 ml-4"
                   value={values.password}
-                  placeholder="Your password"
+                  placeholder="Mật khẩu"
                   onChangeText={handleChange('password')}
-                  secureTextEntry={true}
+                  secureTextEntry={!showPassword}
                 />
-                <Ionicons name="eye-off" size={24} color="gray" />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={24} color="gray" />
+                </TouchableOpacity>
               </View>
               {errors.password && <Text className="text-red-500 text-sm">{errors.password}</Text>}
               <TouchableOpacity onPress={() => navigation.navigate('ForgetPassword')}>

@@ -96,7 +96,7 @@ const DocumentSearch = () => {
 
   return (
     <SafeAreaView style={[globalStyles.container]}>
-      <View className="mx-2 flex-row items-center justify-between p-2">
+      <View className="mx-2 flex-row items-center p-2">
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('DocumentScreen')

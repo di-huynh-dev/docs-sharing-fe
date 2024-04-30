@@ -44,7 +44,7 @@ const UpdateTag = ({ route }) => {
         <TouchableOpacity className="mx-4" onPress={() => navigation.navigate('TagScreen')}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-lg font-bold">Cập nhật danh mục</Text>
+        <Text className="text-lg font-bold">Cập nhật thẻ</Text>
       </View>
       <Formik validationSchema={validationSchema} initialValues={{ tagName: '' }} onSubmit={handUpdateTag}>
         {({ handleChange, handleSubmit, values, errors }) => (

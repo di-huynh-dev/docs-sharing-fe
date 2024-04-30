@@ -33,6 +33,7 @@ import DocumentReportDetail from './report/DocumentReportDetail'
 import PostReportDetail from './report/PostReportDetail'
 import CreateReportPost from './post/CreateReport'
 import CreateReportDoc from './document/CreateReport'
+import UpdatePassword from './profile/UpdatePassword'
 
 export {
   CreateReportDoc,
@@ -70,4 +71,5 @@ export {
   CreatePost,
   DocumentSearch,
   PostSearch,
+  UpdatePassword,
 }

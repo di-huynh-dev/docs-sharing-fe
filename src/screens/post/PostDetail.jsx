@@ -3,16 +3,15 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/userSlice'
 import { AntDesign } from '@expo/vector-icons'
-import { Feather } from '@expo/vector-icons'
+import { Feather, Entypo, MaterialIcons } from '@expo/vector-icons'
 import commentServices from '../../apis/commentService'
 import { formatDate } from '../../utils/helpers'
 import Toast from 'react-native-toast-message'
 import { useNavigation } from '@react-navigation/native'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-import { EvilIcons, Entypo } from '@expo/vector-icons'
+import { EvilIcons } from '@expo/vector-icons'
 import CommentRender from '../../components/CommentRender'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { set } from 'react-hook-form'
 
 const PostDetail = ({ route }) => {
   const { postId } = route.params
@@ -29,6 +28,7 @@ const PostDetail = ({ route }) => {
   const [modalUpdateVisible, setModalUpdateVisible] = useState(false)
   const [isMoreOptionsVisible, setIsMoreOptionsVisible] = useState(false)
   const [modalCommentOptions, setModalCommentOptions] = useState(false)
+  const [modalPrivateOptions, setModalPrivateOptions] = useState(false)
 
   const navigation = useNavigation()
 
@@ -54,7 +54,8 @@ const PostDetail = ({ route }) => {
         type: 'success',
         text1: resp.data.message,
       })
-      setIsMoreOptionsVisible(false)
+      navigation.goBack()
+      setModalPrivateOptions(false)
     },
   })
 
@@ -198,14 +199,23 @@ const PostDetail = ({ route }) => {
   }
 
   return (
-    <View className=" flex-1 bg-white mx-2 my-2 rounded-2xl">
-      <View className="m-2 flex-row gap-4 items-center p-2">
-        <TouchableOpacity className="mx-4" onPress={() => navigation.navigate('PostListScreen')}>
+    <View className=" flex-1 bg-white mx-2 my-2 rounded-2xl ">
+      <View className="mx-2 flex-row items-center p-2">
+        <TouchableOpacity onPress={() => navigation.navigate('PostListScreen')}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-lg font-bold">
-          Bài viết của {postDetail?.user.lastName} {postDetail?.user.firstName}
-        </Text>
+
+        {auth.profile.email === postDetail.user.email ? (
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-center">Bài viết của bạn</Text>
+          </View>
+        ) : (
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-center">
+              Bài viết của {postDetail?.user.lastName} {postDetail?.user.firstName}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Post detail */}
@@ -227,12 +237,6 @@ const PostDetail = ({ route }) => {
               <Text className="text-sm text-gray-500">{formatDate(postDetail?.createdAt)}</Text>
             </View>
           </TouchableOpacity>
-
-          {/* {auth.profile.email === postDetail.user.email && (
-            <TouchableOpacity onPress={() => setIsMoreOptionsVisible(true)} className="flex-row gap-2">
-              <Entypo name="dots-three-horizontal" size={24} color="black" />
-            </TouchableOpacity>
-          )} */}
 
           <Modal
             transparent={true}
@@ -259,6 +263,41 @@ const PostDetail = ({ route }) => {
                 >
                   <AntDesign name="delete" size={24} color="black" />
                   <Text style={{ fontSize: 14 }}>Xóa bài viết</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Modal>
+
+          <TouchableOpacity className="mx-4" onPress={() => setModalPrivateOptions(true)}>
+            <Entypo name="dots-three-horizontal" size={24} color="#99A1BE" />
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            visible={modalPrivateOptions}
+            onRequestClose={() => {
+              setModalPrivateOptions(false)
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              }}
+              onPress={toggleModal}
+            >
+              <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '40%' }}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('PostDetailScreen', { postId: postId })}
+                  className="flex-row gap-2"
+                >
+                  <Entypo name="edit" size={24} color="black" />
+                  <Text style={{ fontSize: 14, marginBottom: 20 }}>Chỉnh sửa</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => deletePostMutation.mutate()} className="flex-row gap-2">
+                  <AntDesign name="delete" size={24} color="black" />
+                  <Text style={{ fontSize: 14 }}>Xóa</Text>
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
@@ -343,9 +382,9 @@ const PostDetail = ({ route }) => {
       <View className="flex-row items-center space-x-2 my-2  border border-gray-200 p-2 rounded-xl">
         <TouchableOpacity onPress={() => likePostMutation.mutate()} className="flex-row items-center">
           {postDetail?.liked === true ? (
-            <View>
+            <View className="flex-row items-center">
               <EvilIcons name="like" size={32} color="blue" />
-              <Text className="text-blue-500 font-bold">Đã thích</Text>
+              <Text className="text-blue-700 font-bold">Đã thích</Text>
             </View>
           ) : (
             <View className="flex-row items-center">

@@ -13,6 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const Signup = () => {
   const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setConfirmShowPassword] = useState(false)
 
   const handleSignup = async (values) => {
     setIsLoading(true)
@@ -128,11 +130,13 @@ const Signup = () => {
                   <TextInput
                     className="flex-grow h-12 ml-4"
                     value={values.password}
-                    placeholder="Your password"
+                    placeholder="Mật khẩu"
                     onChangeText={handleChange('password')}
-                    secureTextEntry={true}
+                    secureTextEntry={!showPassword}
                   />
-                  <Ionicons name="eye-off" size={24} color="gray" />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={24} color="gray" />
+                  </TouchableOpacity>
                 </View>
                 {errors.password && <Text className="text-red-500 text-sm">{errors.password}</Text>}
                 <View className="flex-row items-center border border-gray-200 rounded-xl px-4 mt-8">
@@ -140,11 +144,13 @@ const Signup = () => {
                   <TextInput
                     className="flex-grow h-12 ml-4"
                     value={values.confirmPassword}
-                    placeholder="Your confirmPassword"
+                    placeholder="Mật khẩu xác nhận"
                     onChangeText={handleChange('confirmPassword')}
-                    secureTextEntry={true}
+                    secureTextEntry={!showConfirmPassword}
                   />
-                  <Ionicons name="eye-off" size={24} color="gray" />
+                  <TouchableOpacity onPress={() => setConfirmShowPassword(!showConfirmPassword)}>
+                    <Ionicons name={showConfirmPassword ? 'eye' : 'eye-off'} size={24} color="gray" />
+                  </TouchableOpacity>
                 </View>
                 {errors.confirmPassword && <Text className="text-red-500 text-sm">{errors.confirmPassword}</Text>}
                 <View className="w-2/3 m-auto mt-8">

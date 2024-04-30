@@ -45,10 +45,10 @@ const AddDocument = () => {
   }
 
   const schema = yup.object({
-    docName: yup.string().required(),
-    docIntroduction: yup.string().required(),
-    categoryId: yup.number().required(),
-    fieldId: yup.number().required(),
+    docName: yup.string().required('Name is required'),
+    docIntroduction: yup.string().required('Introduction is required'),
+    categoryId: yup.number().required('Category is required'),
+    fieldId: yup.number().required('Field is required'),
   })
 
   const {
@@ -117,11 +117,11 @@ const AddDocument = () => {
   }
   return (
     <SafeAreaView>
-      <View className="m-2 flex-row gap-4 items-center p-2">
+      <View className="mx-2 flex-row items-center p-2">
         <TouchableOpacity className="mx-4" onPress={() => navigation.navigate('PostListScreen')}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-lg font-bold">Thêm tài liệu</Text>
+        <Text className="text-lg font-bold">Thêm tài liệu mới</Text>
       </View>
       <View className="m-4">
         <Text className="text-[#3588f4] font-bold mb-4 mt-2">Tên tài liệu</Text>

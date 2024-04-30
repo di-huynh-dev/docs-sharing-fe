@@ -1,14 +1,4 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  TextInput,
-  Image,
-  Button,
-  ActivityIndicator,
-  Modal,
-} from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, TextInput, Image, ActivityIndicator, Modal } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
@@ -18,7 +8,7 @@ import * as yup from 'yup'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../redux/reducers/userSlice'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list'
 import Toast from 'react-native-toast-message'
 import * as ImagePicker from 'expo-image-picker'
@@ -26,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker'
 const AddPost = () => {
   const user = useSelector(authSelector)
   const axiosPrivate = useAxiosPrivate()
+  const client = useQueryClient()
   const navigation = useNavigation()
   const [selectedTags, setSelectedTags] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -85,20 +76,6 @@ const AddPost = () => {
     } catch (error) {}
   }
 
-  const schema = yup.object({
-    title: yup.string().required(),
-    content: yup.string().required(),
-  })
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  })
-
   const onSubmit = async (data) => {
     if (selectedTags.length === 0) {
       Toast.show({
@@ -129,7 +106,7 @@ const AddPost = () => {
           'Content-Type': 'multipart/form-data',
         },
       })
-      if (resp.status === 200) {
+      if (resp.data.status === 200) {
         setIsLoading(false)
 
         Toast.show({
@@ -137,9 +114,9 @@ const AddPost = () => {
           text1: resp.data.message,
         })
         setSelectedTags([])
-        navigation.navigate('PostListScreen')
-        reset()
+        navigation.goBack()
       }
+      reset()
     } catch (error) {
       setIsLoading(false)
       Toast.show({
@@ -149,6 +126,19 @@ const AddPost = () => {
     }
   }
 
+  const schema = yup.object({
+    title: yup.string().required('Title is required'),
+    content: yup.string().required('Content is required'),
+  })
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  })
   if (isLoading || isLoadingTags) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

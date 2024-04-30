@@ -72,10 +72,10 @@ const PostReported = () => {
                   'Trạng thái',
                   'Xem chi tiết',
                 ]}
-                style={{ height: 70 }}
-                textStyle={{ marginLeft: 10, width: 1100 / 7 }} // Chia độ rộng đều cho số cột
+                className="h-10 text-center bg-blue-400 text-lg font-bold"
+                textStyle={{ color: 'white', textAlign: 'center' }}
               />
-              <Rows data={data} textStyle={{ marginLeft: 10, width: 1100 / 7 }} />
+              <Rows data={data} style={{ height: 50 }} textStyle={{ marginLeft: 10, flex: 1, textAlign: 'center' }} />
             </Table>
           </View>
         </ScrollView>

@@ -125,13 +125,13 @@ const DocumentListAdmin = () => {
     doc.totalView,
     doc.totalLikes,
     doc.downloadUrl ? (
-      <TouchableOpacity onPress={() => Linking.openURL(doc.dowloadUrl)}>
+      <TouchableOpacity onPress={() => Linking.openURL(doc.downloadUrl)}>
         <Text className="text-blue-500">Xem</Text>
       </TouchableOpacity>
     ) : (
       <Text>Không</Text>
     ),
-    doc.totalLikes,
+    doc.user.email,
     // doc.disabled ? (
     //   <AntDesign name="close" size={24} color="red" />
     // ) : (
@@ -185,11 +185,8 @@ const DocumentListAdmin = () => {
                 'Chia sẻ bởi',
                 'Thao tác',
               ]}
-              style={{
-                height: 70,
-                display: 'flex',
-              }}
-              textStyle={{ marginLeft: 10, flex: 1 }}
+              className="text-center bg-blue-400 text-lg font-bold"
+              textStyle={{ color: 'white', textAlign: 'center' }}
             />
             <Rows data={data} style={{ height: 70 }} textStyle={{ marginLeft: 10, flex: 1 }} />
           </Table>
