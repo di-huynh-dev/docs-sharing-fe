@@ -132,7 +132,7 @@ const AdminUser = () => {
           <Text>Tổng cộng: {data.length} kết quả</Text>
         </View>
         <ScrollView horizontal={true} className="bg-white">
-          <Table borderStyle={{ borderWidth: 2, borderColor: '#c8eefa' }} style={{ width: 900 }}>
+          <Table borderStyle={{ borderWidth: 2, borderColor: '#c8eefa' }} style={{ width: 1200 }}>
             <Row
               data={[
                 'Mã người dùng',
@@ -145,13 +145,10 @@ const AdminUser = () => {
                 'Trạng thái tài khoản',
                 'Thao tác',
               ]}
-              style={{
-                height: 70,
-                display: 'flex',
-              }}
-              textStyle={{ marginLeft: 10, flex: 1 }}
+              className="h-10 text-center bg-blue-400 text-lg font-bold"
+              textStyle={{ color: 'white', textAlign: 'center' }}
             />
-            <Rows data={data} style={{ height: 70 }} textStyle={{ marginLeft: 10, flex: 1 }} />
+            <Rows data={data} style={{ height: 60 }} textStyle={{ marginLeft: 10, flex: 1, textAlign: 'center' }} />
           </Table>
         </ScrollView>
       </ScrollView>

@@ -49,7 +49,7 @@ const OtherUserProfile = ({ route }) => {
   return (
     <SafeAreaView className="py-2">
       <View className="flex-row gap-2 items-center">
-        <TouchableOpacity onPress={() => navigation.navigate('PostListScreen')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
         <Text className="text-xl font-bold leading-snug">

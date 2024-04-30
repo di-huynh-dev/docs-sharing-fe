@@ -1,13 +1,4 @@
-import {
-  View,
-  Text,
-  StatusBar,
-  TouchableOpacity,
-  FlatList,
-  ActivityIndicator,
-  StyleSheet,
-  RefreshControl,
-} from 'react-native'
+import { View, Text, StatusBar, TouchableOpacity, FlatList, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { globalStyles } from '../../styles/globalStyles'
@@ -35,11 +26,11 @@ const PostList = () => {
         const resp = await axiosPrivate.get('/post/all?page=' + page + '&size=10')
         return resp
       } catch (error) {
-        console.log(error)
         throw new Error('Failed to fetch posts')
       }
     },
   })
+
   useEffect(() => {
     if (posts) {
       if (posts.data.data.content.length === 0) {
@@ -118,17 +109,5 @@ const PostList = () => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  floatingButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 25,
-    padding: 10,
-    zIndex: 999,
-  },
-})
 
 export default PostList

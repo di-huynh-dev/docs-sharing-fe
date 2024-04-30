@@ -14,6 +14,7 @@ import Toast from 'react-native-toast-message'
 
 const AdminHomeScreen = () => {
   const auth = useSelector(authSelector)
+  console.log(auth)
   const dispatch = useDispatch()
   const navigation = useNavigation()
   const [isShowModal, setIsShowModal] = useState(false)
@@ -181,7 +182,7 @@ const AdminHomeScreen = () => {
                   <MaterialIcons name="report" size={24} color="orange" />
                 </View>
               </View>
-              <Text className="text-4xl font-bold my-5">{summary.totalTags}</Text>
+              <Text className="text-4xl font-bold my-5">{summary.totalDocumentReports}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="w-1/2 shadow-lg bg-white p-4 rounded-xl"
@@ -193,7 +194,7 @@ const AdminHomeScreen = () => {
                   <MaterialIcons name="report-problem" size={24} color="red" />
                 </View>
               </View>
-              <Text className="text-4xl font-bold my-5">{summary.totalFields}</Text>
+              <Text className="text-4xl font-bold my-5">{summary.totalPostReports}</Text>
             </TouchableOpacity>
           </View>
         </View>

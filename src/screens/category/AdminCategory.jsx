@@ -114,24 +114,22 @@ const AdminCategory = () => {
           </TouchableOpacity>
         </View>
         <ScrollView horizontal={true} className="bg-white">
-          <View>
-            <Table borderStyle={{ borderWidth: 2, borderColor: '#c8eefa' }} style={{ width: 900 }}>
-              <Row
-                data={[
-                  'Mã danh mục',
-                  'Tên danh mục',
-                  'Ngày tạo',
-                  'Ngày cập nhật',
-                  'Tổng người dùng',
-                  'Trạng thái ',
-                  'Thao tác',
-                ]}
-                style={{ height: 70 }}
-                textStyle={{ marginLeft: 10, width: 1100 / 7 }} // Chia độ rộng đều cho số cột
-              />
-              <Rows data={data} textStyle={{ marginLeft: 10, width: 1100 / 7 }} />
-            </Table>
-          </View>
+          <Table borderStyle={{ borderWidth: 2, borderColor: '#c8eefa' }} style={{ width: 900 }}>
+            <Row
+              data={[
+                'Mã danh mục',
+                'Tên danh mục',
+                'Ngày tạo',
+                'Ngày cập nhật',
+                'Tổng người dùng',
+                'Trạng thái ',
+                'Thao tác',
+              ]}
+              className="h-10 text-center bg-blue-400 text-lg font-bold"
+              textStyle={{ color: 'white', textAlign: 'center' }}
+            />
+            <Rows data={data} style={{ height: 40 }} textStyle={{ marginLeft: 10, flex: 1, textAlign: 'center' }} />
+          </Table>
         </ScrollView>
       </ScrollView>
     </SafeAreaView>

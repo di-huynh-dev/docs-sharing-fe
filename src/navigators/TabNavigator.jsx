@@ -49,9 +49,9 @@ const TabNavigator = () => {
             if (route.name === 'Home') {
               iconName = 'home-outline'
             } else if (route.name === 'Explore') {
-              iconName = 'earth-outline'
-            } else if (route.name === 'Document') {
               iconName = 'save-outline'
+            } else if (route.name === 'Document') {
+              iconName = 'document-text-outline'
             } else if (route.name === 'CreatePostScreen') {
               iconName = 'plus'
               size = 35

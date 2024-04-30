@@ -43,6 +43,7 @@ const PostVerticalItem = ({ postId, title, content, createdAt, totalComments, us
       })
     },
   })
+
   if (isLoading) return null
   return (
     <View className="bg-white p-4 rounded-lg">

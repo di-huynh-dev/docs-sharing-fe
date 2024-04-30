@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { AntDesign } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
+import { useQueryClient } from '@tanstack/react-query'
 
 const CreatePost = ({ route }) => {
   const { postId } = route.params

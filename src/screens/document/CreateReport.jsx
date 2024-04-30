@@ -8,6 +8,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 import { TextInput } from 'react-native-gesture-handler'
 import { Feather } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
+import TopBackNavigate from '../../components/TopBackNavigate'
 
 const CreateReport = ({ route }) => {
   const { docId } = route.params
@@ -54,10 +55,7 @@ const CreateReport = ({ route }) => {
   if (reasonsLoading) return <ActivityIndicator />
   return (
     <SafeAreaView className="p-2">
-      <TouchableOpacity className="flex-row items-center gap-2" onPress={() => navigation.goBack()}>
-        <AntDesign name="arrowleft" size={24} color="black" />
-        <Text className="text-lg font-bold">Báo cáo tài liệu</Text>
-      </TouchableOpacity>
+      <TopBackNavigate page={'Trang cá nhân'} />
       <Text className="text-[#3588f4] font-bold mb-4 mt-2">Lý do báo cáo</Text>
       <SelectList
         placeholder="Chọn lý do báo cáo"

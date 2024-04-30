@@ -12,18 +12,20 @@ import RNPickerSelect from 'react-native-picker-select'
 import { SelectList } from 'react-native-dropdown-select-list'
 import userServices from '../../apis/userServices'
 import Toast from 'react-native-toast-message'
+import { useQueryClient } from '@tanstack/react-query'
 
 const UpdateProfile = () => {
   const auth = useSelector(authSelector)
   const navigation = useNavigation()
   const [dateOfBirth, setDateOfBirth] = useState(new Date())
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [gender, setGender] = useState(0) // default male, you can set your desired default value
+  const [gender, setGender] = useState(0)
   const dispatch = useDispatch()
+  const queryClient = useQueryClient()
 
   const genders = [
-    { key: 'Nam', value: 1 },
-    { key: 'Nữ', value: 0 },
+    { key: 'Nam', value: 0 },
+    { key: 'Nữ', value: 1 },
   ]
 
   const validationSchema = yup.object().shape({
@@ -55,7 +57,8 @@ const UpdateProfile = () => {
           type: 'success',
           text1: resp.message,
         })
-        navigation.navigate('ProfileScreen')
+        queryClient.invalidateQueries(['Profile'])
+        navigation.goBack()
       } else {
         Toast.show({
           type: 'error',
@@ -67,7 +70,7 @@ const UpdateProfile = () => {
 
   return (
     <SafeAreaView>
-      <View className="m-2 flex-row gap-4 items-center p-2">
+      <View className="mx-2 flex-row items-center p-2">
         <TouchableOpacity className="mx-4" onPress={() => navigation.navigate('ProfileScreen')}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
