@@ -28,5 +28,4 @@ npx expo start
 
 ## Tài liệu khác
 Figma file:
- [Figma](https://www.figma.com/file/iv2tVH08jhVauJB6Yy6qfj/Docs-Sharing-App?type=design&node-id=0-1&mode=design&t=UvnsSjG78B0zxZsk-0)# Xây dựng ứng dụng chia sẻ tài liệu Docs Sharing
-
+ [Figma](https://www.figma.com/file/iv2tVH08jhVauJB6Yy6qfj/Docs-Sharing-App?type=design&node-id=0-1&mode=design&t=UvnsSjG78B0zxZsk-0)
