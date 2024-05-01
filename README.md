@@ -1,6 +1,6 @@
 # Xây dựng ứng dụng chia sẻ tài liệu Docs Sharing
 
-## Thành viên nhóm
+## Thành viên nhóm 18 - Lập trình di động nâng cao ST5
 1. Huỳnh Tiến Dĩ - 20110246
 2. Nguyễn Văn Thuận - 20110732
 3. Phan Quan Huy - 20110652
