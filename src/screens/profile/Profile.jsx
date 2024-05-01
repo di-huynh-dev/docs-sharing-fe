@@ -61,9 +61,6 @@ const Profile = () => {
 
       <ScrollView className="my-2">
         <View className="mx-2 flex-row items-center p-2">
-          <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
           <View className="flex-1">
             <Text className="text-xl font-bold leading-snug text-center">Trang cá nhân</Text>
           </View>

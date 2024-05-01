@@ -15,7 +15,6 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const DocumentScreen = () => {
   const auth = useSelector(authSelector)
-  console.log(auth)
   const navigation = useNavigation()
   const client = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
