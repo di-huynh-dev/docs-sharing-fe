@@ -201,7 +201,7 @@ const PostDetail = ({ route }) => {
   return (
     <View className=" flex-1 bg-white mx-2 my-2 rounded-2xl ">
       <View className="mx-2 flex-row items-center p-2">
-        <TouchableOpacity onPress={() => navigation.navigate('PostListScreen')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
 
@@ -289,7 +289,7 @@ const PostDetail = ({ route }) => {
             >
               <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, width: '40%' }}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('PostDetailScreen', { postId: postId })}
+                  onPress={() => navigation.navigate('UpdatePostScreen', { postId: postId })}
                   className="flex-row gap-2"
                 >
                   <Entypo name="edit" size={24} color="black" />

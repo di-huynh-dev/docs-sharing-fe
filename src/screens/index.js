@@ -20,6 +20,7 @@ import UpdateTag from './tag/UpdateTag'
 import AdminTag from './tag/AdminTag'
 import PostList from './post/PostList'
 import PostDetail from './post/PostDetail'
+import UpdatePost from './post/UpdatePost'
 import PostComment from './post/PostComment'
 import PostSearch from './post/PostSearch'
 import CreatePost from './post/CreatePost'
@@ -36,6 +37,7 @@ import CreateReportDoc from './document/CreateReport'
 import UpdatePassword from './profile/UpdatePassword'
 
 export {
+  UpdatePost,
   CreateReportDoc,
   CreateReportPost,
   PostReportDetail,
