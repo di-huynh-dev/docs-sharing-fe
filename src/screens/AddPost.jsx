@@ -175,7 +175,7 @@ const AddPost = () => {
           </Text>
         </View>
 
-        <Text className="text-[#3588f4] font-bold mb-4 mt-2">Chọn Thẻ tài liệu</Text>
+        <Text className="text-[#3588f4] font-bold mb-4 mt-2">Chọn Thẻ bài đăng</Text>
         <Controller
           control={control}
           render={({ field: { onChange, value } }) => (

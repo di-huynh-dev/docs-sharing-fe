@@ -135,7 +135,7 @@ const DocumentScreen = () => {
         </View>
         {documents.length > 0 ? (
           <FlatList
-            className="mr-2"
+            className="mr-2 mb-10"
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             showsVerticalScrollIndicator={false}
             data={documents}

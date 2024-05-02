@@ -118,7 +118,7 @@ const AddDocument = () => {
   return (
     <SafeAreaView>
       <View className="mx-2 flex-row items-center p-2">
-        <TouchableOpacity className="mx-4" onPress={() => navigation.navigate('PostListScreen')}>
+        <TouchableOpacity className="mx-4" onPress={() => navigation.goBack()}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
         <Text className="text-lg font-bold">Thêm tài liệu mới</Text>

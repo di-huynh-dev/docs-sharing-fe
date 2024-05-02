@@ -268,9 +268,11 @@ const PostDetail = ({ route }) => {
             </TouchableOpacity>
           </Modal>
 
-          <TouchableOpacity className="mx-4" onPress={() => setModalPrivateOptions(true)}>
-            <Entypo name="dots-three-horizontal" size={24} color="#99A1BE" />
-          </TouchableOpacity>
+          {auth.profile.email === postDetail.user.email && (
+            <TouchableOpacity className="mx-4" onPress={() => setModalPrivateOptions(true)}>
+              <Entypo name="dots-three-horizontal" size={24} color="#99A1BE" />
+            </TouchableOpacity>
+          )}
           <Modal
             transparent={true}
             visible={modalPrivateOptions}

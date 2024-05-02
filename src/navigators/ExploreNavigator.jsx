@@ -122,7 +122,7 @@ export default function ExploreNavigator() {
             <Entypo name="text-document" size={24} color="blue" />
             <Text className="text-sm font-bold text-blue-700">Tài liệu của tôi</Text>
           </View>
-          {!docList && <Text className="text-center bg-white">Chưa có bài đăng nào được chia sẻ</Text>}
+          {!docList && <Text className="text-center bg-white">Chưa có tài liệu nào được chia sẻ</Text>}
           <FlatList
             className="mx-2 bg-white"
             showsHorizontalScrollIndicator={false}
